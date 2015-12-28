@@ -58,7 +58,7 @@ public class NetworkManager {
 		
 		try {
 			server.start();
-			server.bind(InetAddress.getLocalHost().getHostAddress(), PORT);
+			server.bind("localhost", PORT);
 		} catch (UnknownHostException e) {
 			return ERR_UNKNOWN_HOST;
 		} catch (IOException e) {
@@ -94,5 +94,9 @@ public class NetworkManager {
 	
 	public static final boolean isConnected() {
 		return connected;
+	}
+	
+	public static final void setType(int type) {
+		NetworkManager.type = type;
 	}
 }

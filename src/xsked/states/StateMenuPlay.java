@@ -42,7 +42,7 @@ public class StateMenuPlay extends GameState {
 		Button connect = new Button(Main.WIDTH / 2, (Main.HEIGHT / 4) * 2, 400, 100,
 				Texture.getDT("button_wood2", true)).setFont("Connect", font, .5f);
 		
-		connect.setClickEvent(() -> GameStateManager.enterState("Apprentice"));
+		connect.setClickEvent(() -> GameStateManager.enterState("Connect Menu"));
 		
 		Button back = new Button(Main.WIDTH / 2, (Main.HEIGHT / 4) * 1, 400, 100,
 				Texture.getDT("button_wood1", true)).setFont("Back", font, .5f);
@@ -53,7 +53,9 @@ public class StateMenuPlay extends GameState {
 		gui.addElements(
 			host,
 			connect,
-			back
+			back,
+			//DEBUG------------------------------------------------------------------------------------
+			new Button(100, 100, 50, 50, Texture.DEFAULT_TEXTURE).setClickEvent(() -> GameStateManager.enterState("Apprentice"))
 		);
 		
 	}
