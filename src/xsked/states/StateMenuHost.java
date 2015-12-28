@@ -1,5 +1,9 @@
 package xsked.states;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.PriorityQueue;
+
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
@@ -15,11 +19,12 @@ import time.api.gfx.shader.OrthographicShaderProgram;
 import time.api.gfx.texture.Texture;
 import xsked.Main;
 import xsked.net.NetworkManager;
+import xsked.net.PacketState;
 
 public class StateMenuHost extends GameState {
 	
-	public static final String DISPLAY_WAITING = "Waiting for partner...";
-	public static final String DISPLAY_CONNECTED = "Partner found!";
+	public static final String DISPLAY_WAITING = "Looking for an apprentice...";
+	public static final String DISPLAY_CONNECTED = "Apprentice found!";
 	
 	private FontType font;
 	
@@ -29,6 +34,8 @@ public class StateMenuHost extends GameState {
 	
 	private FontRenderer display;
 	
+	private PriorityQueue<String> queue;
+	
 	public StateMenuHost(Game game) {
 		super("Host Menu");
 		
@@ -37,6 +44,10 @@ public class StateMenuHost extends GameState {
 	
 	@Override
 	public void init() {
+		
+		NetworkManager.setType(NetworkManager.TYPE_SERVER);
+		
+		queue = new PriorityQueue<>();
 		
 		font = FontType.FNT_ARIAL;
 		
@@ -56,13 +67,7 @@ public class StateMenuHost extends GameState {
 		}
 		
 		
-		
 		gui = new GUI();
-		
-		Button start = new Button(Main.WIDTH / 2, (Main.HEIGHT / 4) * 2, 400, 100,
-				Texture.getDT("button_wood1", true)).setFont("Start", font, .5f);
-		
-		start.setClickEvent(() -> {});
 		
 		Button back = new Button(Main.WIDTH / 2, (Main.HEIGHT / 4) * 1, 400, 100,
 				Texture.getDT("button_wood2", true)).setFont("Back", font, .5f);
@@ -70,7 +75,6 @@ public class StateMenuHost extends GameState {
 		back.setClickEvent(() -> GameStateManager.enterState("Play Menu"));
 		
 		gui.addElements(
-			start,
 			back
 		);
 	}
@@ -98,7 +102,36 @@ public class StateMenuHost extends GameState {
 	
 	@Override
 	public void update(float dt) {
+		while(!queue.isEmpty()) {
+			String s = queue.poll();
+			switch(s) {
+			default:
+				setDisplay(s);
+				break;
+			case "start":
+				addStartButton();
+				break;
+			}
+		}
 		gui.update(dt, OrthographicShaderProgram.INSTANCE.getMouseClipspaceCoordinates(game.getWindow(), Main.WIDTH, Main.HEIGHT));
+	}
+	
+	private synchronized void addStartButton() {
+		Button start = new Button(Main.WIDTH / 2, (Main.HEIGHT / 4) * 2, 400, 100,
+				Texture.getDT("button_wood1", true)).setFont("Start", font, .5f);
+		
+		start.setClickEvent(() -> {
+			if(!NetworkManager.getServer().send(0, new PacketState("Apprentice"))) {
+				Debug.log("Failed to send packet");
+			}
+			GameStateManager.enterState("Wizard");
+		});
+		
+		gui.addElements(start);
+	}
+	
+	public void setQueue(String text) {
+		queue.add(text);
 	}
 	
 	public void setDisplay(String text) {
