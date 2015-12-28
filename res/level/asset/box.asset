@@ -1,0 +1,4 @@
+define> name Box
+define> renderer p1|p2
+define> texture res/texture/box.png
+define> body p1|p2|p0
