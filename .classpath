@@ -2,19 +2,19 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="lib" path="lib/jar/lwjgl.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="TheEdvardChallenge/lib/native"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="lib/jar/SKNet.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/The%20Edvard%20Challenge/lib/doc/SKNet%20-%20doc.zip!/"/>
+			<attribute name="javadoc_location" value="jar:platform:/resource/TheEdvardChallenge/lib/doc/SKNet%20-%20doc.zip!/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/jar/TimeAPI.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/The%20Edvard%20Challenge/lib/doc/TimeAPI%20-%20doc.zip!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/jar/lwjgl.jar">
-		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="The Edvard Challenge/lib/native"/>
+			<attribute name="javadoc_location" value="jar:platform:/resource/TheEdvardChallenge/lib/doc/TimeAPI%20-%20doc.zip!/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
