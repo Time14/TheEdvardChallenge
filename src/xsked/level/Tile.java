@@ -11,8 +11,11 @@ public class Tile extends Entity {
 	
 	private boolean solid;
 	
-	public Tile(int x, int y, Texture texture, boolean solid, boolean absolute) {
+	protected Level level;
+	
+	public Tile(Level level, int x, int y, Texture texture, boolean solid, boolean absolute) {
 		setRenderer(new QuadRenderer(x * SIZE, y * SIZE, SIZE, SIZE, texture));
-		body = new Body(transform, SIZE, SIZE).setTrigger(!solid).setAbsolute(absolute).setEpsilon(0).setFriction(0);
+		body = new Body(transform, SIZE, SIZE).setTrigger(!solid).setAbsolute(absolute).setEpsilon(0).setFriction(10);
+		this.level = level;
 	}
 }

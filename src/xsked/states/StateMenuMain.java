@@ -15,7 +15,6 @@ import time.api.gfx.texture.DynamicTexture;
 import time.api.gfx.texture.SpriteSheet;
 import time.api.gfx.texture.Texture;
 import time.api.input.InputManager;
-import time.api.util.Time;
 import xsked.Main;
 import xsked.level.Camera;
 
@@ -103,7 +102,7 @@ public class StateMenuMain extends GameState {
 				OrthographicShaderProgram.initProjection(0, Main.WIDTH, 0, Main.HEIGHT));
 		Camera.push();
 		
-		GLFW.glfwSwapInterval(1);
+//		GLFW.glfwSwapInterval(1);
 		
 		//Sprite sheets
 		SpriteSheet.register("button_wood1", new SpriteSheet(2, 1, 64, 16).loadTexture("res/texture/button_wood1.png"));
