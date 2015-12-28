@@ -106,25 +106,32 @@ public class StateMenuMain extends GameState {
 		GLFW.glfwSwapInterval(1);
 		
 		//Sprite sheets
-		
 		SpriteSheet.register("button_wood1", new SpriteSheet(2, 1, 64, 16).loadTexture("res/texture/button_wood1.png"));
 		SpriteSheet.register("button_wood2", new SpriteSheet(2, 1, 64, 16).loadTexture("res/texture/button_wood2.png"));
 		
 		SpriteSheet.register("tiles_platform", new SpriteSheet(2, 2, 16, 16).loadTexture("res/texture/tiles/tiles_platform.png"));
 		
-		//Textures
+		SpriteSheet.register("player", new SpriteSheet(1, 1, 16, 32).loadTexture("res/texture/character.png"));
 		
+		//Textures
 		Texture.register("button_wood1", new DynamicTexture(SpriteSheet.get("button_wood1")));
 		Texture.register("button_wood2", new DynamicTexture(SpriteSheet.get("button_wood2")));
 		
 		Texture.register("tile_background", new Texture("res/texture/tiles/tile_background.png"));
 		Texture.register("tile_stonebricks", SpriteSheet.get("tiles_platform").getTexture(0, 0));
 		
+		Texture.register("player", SpriteSheet.get("player").getTexture(0, 0));
+		
 		//Register keys
 		InputManager.registerKey(GLFW.GLFW_KEY_UP, 0, "up");
 		InputManager.registerKey(GLFW.GLFW_KEY_DOWN, 0, "down");
 		InputManager.registerKey(GLFW.GLFW_KEY_LEFT, 0, "left");
 		InputManager.registerKey(GLFW.GLFW_KEY_RIGHT, 0, "right");
+		
+		//Player Movement
+		InputManager.registerKey(GLFW.GLFW_KEY_A, 0, "p_left");
+		InputManager.registerKey(GLFW.GLFW_KEY_D, 0, "p_right");
+		InputManager.registerKey(GLFW.GLFW_KEY_SPACE, 0, "p_jump");
 		
 		initialized = true;
 	}

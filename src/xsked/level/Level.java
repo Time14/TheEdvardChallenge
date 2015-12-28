@@ -3,6 +3,7 @@ package xsked.level;
 import time.api.entity.EntityManager;
 import time.api.gfx.texture.Texture;
 import time.api.input.InputManager;
+import time.api.physics.PhysicsEngine;
 
 public class Level {
 	
@@ -12,14 +13,24 @@ public class Level {
 	
 	private int floor;
 	
+	private Player player;
+	private PhysicsEngine pe;
 	private EntityManager em;
 	
 	public Level(int tilesX, int tilesY, int floor) {
 		this.tilesX = tilesX;
 		this.tilesY = tilesY;
 		this.floor = floor;
+
+		player = new Player(200, 500);
 		
-		em = new EntityManager();
+		pe = new PhysicsEngine();
+		em = new EntityManager(null);
+		
+		pe.setGravity(0, -900);
+		
+		em.addEntity("Player", player);
+		pe.addBody(player.getBody());
 		
 		generateLevel();
 	}
@@ -41,13 +52,20 @@ public class Level {
 		//Generate floor
 		for(int x = 0; x < tilesX; x++) {
 			Tile t = new Tile(x, 0, Texture.get("tile_stonebricks"), true, true);
-			em.addToGroup("floor", t);
+			
+			em.addToGroup("floor", t);			
 			tiles[0][x] = t;
+			
+			//Add Bodies
+			t.getBody().addTag(Tag.GROUND.name());
+			pe.addBody(t.getBody());
 		}
 	}
 	
 	public void update(float delta) {
 		em.update(delta);
+		player.p_update(delta);
+		pe.update(delta);
 		
 		if(InputManager.isDown("up")) {
 			Camera.translate(0, delta * Player.SPEED);
@@ -64,6 +82,8 @@ public class Level {
 	}
 	
 	public void draw() {
+//		pe._debugDraw();
 		em.draw();
+		player.draw();
 	}
 }

@@ -13,6 +13,6 @@ public class Tile extends Entity {
 	
 	public Tile(int x, int y, Texture texture, boolean solid, boolean absolute) {
 		setRenderer(new QuadRenderer(x * SIZE, y * SIZE, SIZE, SIZE, texture));
-		body = new Body(transform, SIZE, SIZE).setTrigger(solid).setAbsolute(absolute);
+		body = new Body(transform, SIZE, SIZE).setTrigger(!solid).setAbsolute(absolute).setEpsilon(0).setFriction(0);
 	}
 }
