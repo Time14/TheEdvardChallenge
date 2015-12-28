@@ -7,6 +7,14 @@ public class Camera {
 	
 	private static float x, y;
 	
+	public static final float getX() {
+		return x;
+	}
+	
+	public static final float getY() {
+		return y;
+	}
+	
 	public static final void translate(float x, float y) {
 		Camera.x += x;
 		Camera.y += y;
