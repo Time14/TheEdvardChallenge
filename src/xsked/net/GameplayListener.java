@@ -11,7 +11,8 @@ public class GameplayListener implements SKPacketListener {
 	@Override
 	public void connected(SKConnection connection) {
 		if(NetworkManager.isServer()) {
-			((StateMenuHost) GameStateManager.getGameState("Host Menu")).setDisplay("");;
+			((StateMenuHost) GameStateManager.getGameState("Host Menu")).setQueue(StateMenuHost.DISPLAY_CONNECTED);
+			((StateMenuHost) GameStateManager.getGameState("Host Menu")).setQueue("start");
 		}
 		NetworkManager.setConnected(true);
 	}
@@ -23,6 +24,6 @@ public class GameplayListener implements SKPacketListener {
 	
 	@Override
 	public void received(SKConnection connection, SKPacket packet) {
-		
+		EventQueue.queue(packet);
 	}
 }
