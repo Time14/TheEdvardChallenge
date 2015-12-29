@@ -116,8 +116,7 @@ public class StateMenuMain extends GameState {
 		Texture.register("button_wood1", new DynamicTexture(SpriteSheet.get("button_wood1")));
 		Texture.register("button_wood2", new DynamicTexture(SpriteSheet.get("button_wood2")));
 		
-		Texture.register("tile_background", new Texture("res/texture/tiles/tile_background.png"));
-		Texture.register("tile_stonebricks", SpriteSheet.get("tiles_platform").getTexture(0, 0));
+		Texture.register("tilesheet", new Texture("res/texture/tiles/fullSheet.png"));
 		
 		Texture.register("player", SpriteSheet.get("player").getTexture(0, 0));
 		

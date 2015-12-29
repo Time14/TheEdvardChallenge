@@ -1,18 +1,37 @@
 package xsked.level;
 
 import time.api.gfx.texture.Texture;
+import time.api.math.Vector2f;
 import time.api.physics.Body;
 
 public class GroundTile extends Tile{
 
 	public static final float HEIGHT = 5.0f;
 	
-	public GroundTile(Level level, int x, int y, int spriteOffset) {
-		super(level,x, y, spriteOffset, true, true);
-		Body b = new Body(this.getX(), this.getY() + (Tile.SIZE + HEIGHT)/2.0f, Tile.SIZE * 0.9f, HEIGHT)
+	private Body groundTrigger;
+	
+	public GroundTile(Level level, Chunk chunk, int spriteOffset) {
+		this(level, chunk, 0, 0, spriteOffset);
+	}
+	
+	public GroundTile(Level level, Chunk chunk, int x, int y, int spriteOffset) {
+		super(level, chunk, x, y, spriteOffset, true, true);
+		groundTrigger = new Body(0, 0, Tile.SIZE * 0.9f, HEIGHT)
 				.setTrigger(true).setAbsolute(true);
-		b.addTag(Tag.GROUND.name());
-		level.getPhysicsEngien().addBody(b);
+		groundTrigger.addTag(Tag.GROUND.name());
+		level.getPhysicsEngien().addBody(groundTrigger);
+		
+		updateCollider();
+	}
+	
+	public void updateCollider() {
+		super.updateCollider();
+		
+		if(groundTrigger == null)
+			return;
+		
+		groundTrigger.setPos(new Vector2f((x + chunk.x * Chunk.TILES) * Tile.SIZE,
+				y * Tile.SIZE + (Tile.SIZE + HEIGHT)/2.0f + chunk.y * Chunk.SIZE));
 	}
 	
 }

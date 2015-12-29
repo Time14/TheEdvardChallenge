@@ -3,7 +3,9 @@ package xsked.states;
 import org.lwjgl.opengl.GL11;
 
 import time.api.gamestate.GameState;
+import xsked.level.Chunk;
 import xsked.level.Level;
+import xsked.level.Tile;
 import xsked.net.EventQueue;
 import xsked.net.LevelSender;
 
@@ -18,10 +20,12 @@ public class StateApprentice extends GameState {
 	@Override
 	public void init() {
 		
-		level = new Level(10, 10, 0);
+		level = new Level().generateEmpty(2, 2);
 		
-		LevelSender.setLevel(level);
-		EventQueue.setLevel(level);
+		level.setTile(6, 2, new Tile(level, level.getChunk(1, 0), 1, false));
+		
+//		LevelSender.setLevel(level);
+//		EventQueue.setLevel(level);
 	}
 	
 	@Override
@@ -42,7 +46,7 @@ public class StateApprentice extends GameState {
 	@Override
 	public void update(float dt) {
 		level.update(dt);
-		LevelSender.updateApprentice(dt);
-		EventQueue.process();
+//		LevelSender.updateApprentice(dt);
+//		EventQueue.process();
 	}
 }
