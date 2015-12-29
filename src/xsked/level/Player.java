@@ -12,11 +12,9 @@ import xsked.Main;
 
 public class Player extends Entity{
 	
-	public static final float ACC = 20f;
-	public static final float JUMP_ACC = 10f;
-	public static final float MAX_SPEED = 200f;
+	public static final float MAX_SPEED = 300f;
 	
-	public static final float JUMP_SPEED = 400.0f;
+	public static final float JUMP_SPEED = 500.0f;
 	
 	public static final float CAM_SPEED = 7.5f;
 	
@@ -33,7 +31,7 @@ public class Player extends Entity{
 	
 	public Player(float x, float y) {
 		setRenderer(new QuadRenderer(x, y, WIDTH, HEIGHT, Texture.get("player")));
-		setBody(new Body(this.transform, WIDTH, HEIGHT).setEpsilon(0).setFriction(2f));
+		setBody(new Body(this.transform, WIDTH, HEIGHT).setEpsilon(0).setFriction(0f));
 		
 		element = Tag.FIRE;
 		
@@ -81,19 +79,16 @@ public class Player extends Entity{
 			body.addVel(new VectorXf(0, JUMP_SPEED));
 		}
 		if (InputManager.wasPressed("p_left") || InputManager.isDown("p_left")) {
-			if (grounded)
-				body.push(new Vector2f(-ACC, 0));
-			else
-				body.push(new Vector2f(-JUMP_ACC, 0));
+			body.setVel(new Vector2f(-MAX_SPEED, body.getVel().getY()));
+
 			direction = -1;
 		} else if (InputManager.wasPressed("p_right") || InputManager.isDown("p_right")) {
-			if (grounded)
-				body.push(new Vector2f(ACC, 0));
-			else
-				body.push(new Vector2f(JUMP_ACC, 0));
+			body.setVel(new Vector2f(MAX_SPEED, body.getVel().getY()));
+
 			direction = 1;
+		} else if (grounded) {
+			body.setVel(new Vector2f(0, body.getVel().getY()));
 		}
-		
 		if (MAX_SPEED < Math.abs(body.getVel().dot(flatVector))) {
 			body.setVel(new Vector2f(direction * MAX_SPEED, body.getVel().getY()));
 		}
@@ -101,6 +96,10 @@ public class Player extends Entity{
 	
 	public int getDirection() {
 		return direction;
+	}
+	
+	public boolean isGrounded() {
+		return grounded;
 	}
 	
 }
