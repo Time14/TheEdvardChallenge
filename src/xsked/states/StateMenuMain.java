@@ -56,13 +56,11 @@ public class StateMenuMain extends GameState {
 		
 		exit.setClickEvent(() -> game.stop());
 		
-		
 		gui.addElements(
 			play,
 			hiScore,
 			exit
 		);
-		
 	}
 	
 	@Override
@@ -102,7 +100,9 @@ public class StateMenuMain extends GameState {
 				OrthographicShaderProgram.initProjection(0, Main.WIDTH, 0, Main.HEIGHT));
 		Camera.push();
 		
-//		GLFW.glfwSwapInterval(1);
+		GL11.glDisable(GL11.GL_POLYGON_SMOOTH);
+		
+		GLFW.glfwSwapInterval(1);
 		
 		//Sprite sheets
 		SpriteSheet.register("button_wood1", new SpriteSheet(2, 1, 64, 16).loadTexture("res/texture/button_wood1.png"));
@@ -110,7 +110,7 @@ public class StateMenuMain extends GameState {
 		
 		SpriteSheet.register("tiles_platform", new SpriteSheet(2, 2, 16, 16).loadTexture("res/texture/tiles/tiles_platform.png"));
 		
-		SpriteSheet.register("player", new SpriteSheet(1, 1, 16, 32).loadTexture("res/texture/character.png"));
+		SpriteSheet.register("player", new SpriteSheet(16, 8, 16, 32).loadTexture("res/texture/apprentice/apprenticeSheet.png"));
 		
 		//Textures
 		Texture.register("button_wood1", new DynamicTexture(SpriteSheet.get("button_wood1")));
@@ -118,7 +118,7 @@ public class StateMenuMain extends GameState {
 		
 		Texture.register("tilesheet", new Texture("res/texture/tiles/fullSheet.png"));
 		
-		Texture.register("player", SpriteSheet.get("player").getTexture(0, 0));
+		Texture.register("player", new DynamicTexture(SpriteSheet.get("player")));
 		
 		//Register keys
 		InputManager.registerKey(GLFW.GLFW_KEY_UP, 0, "up");

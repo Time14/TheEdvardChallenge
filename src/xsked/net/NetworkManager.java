@@ -28,6 +28,7 @@ public class NetworkManager {
 	
 	static {
 		server.setMaxConnections(1);
+		server.setTimeout(1000);
 		
 		listener = new GameplayListener();
 		

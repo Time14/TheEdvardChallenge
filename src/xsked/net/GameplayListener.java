@@ -28,9 +28,12 @@ public class GameplayListener implements SKPacketListener {
 		if(packet instanceof PacketState) {
 			EventQueue.queue(packet);
 		} else if(packet instanceof PacketPosition) {
-			if(((PacketPosition) packet).TYPE.equals("player")) {
-				EventQueue.getLevel().getPlayer().setPosition(((PacketPosition) packet).X, ((PacketPosition) packet).Y);
-				EventQueue.getLevel().getPlayer().getBody().setVel(new Vector2f(((PacketPosition) packet).VX, ((PacketPosition) packet).VY));
+			PacketPosition p = (PacketPosition) packet;
+			if(p.TYPE.equals("player")) {
+				EventQueue.getLevel().getPlayer().getBody().setPos(new Vector2f(p.X, p.Y));
+				EventQueue.getLevel().getPlayer().getBody().setVel(
+						new Vector2f(p.VX, p.VY));
+				EventQueue.getLevel().getPlayer().setSpeed(p.VX);
 			}
 		}
 	}

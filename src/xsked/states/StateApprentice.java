@@ -22,10 +22,8 @@ public class StateApprentice extends GameState {
 		
 		level = new Level(2, 2);
 		
-		level.setTile(6, 2, new Tile(level, level.getChunk(1, 0), 1, false));
-		
-//		LevelSender.setLevel(level);
-//		EventQueue.setLevel(level);
+		LevelSender.setLevel(level);
+		EventQueue.setLevel(level);
 	}
 	
 	@Override
@@ -46,7 +44,7 @@ public class StateApprentice extends GameState {
 	@Override
 	public void update(float dt) {
 		level.update(dt);
-//		LevelSender.updateApprentice(dt);
-//		EventQueue.process();
+		LevelSender.updateApprentice(dt);
+		EventQueue.process();
 	}
 }
