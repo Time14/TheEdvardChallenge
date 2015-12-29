@@ -4,6 +4,7 @@ import sk.net.SKPacket;
 import time.api.debug.Debug;
 import time.api.input.InputManager;
 import time.api.math.Vector2f;
+import time.api.math.VectorXf;
 import xsked.level.Level;
 
 public class LevelSender {
@@ -28,16 +29,21 @@ public class LevelSender {
 	public static final void updateApprentice(float dt) {
 		
 		//Send player position
-		if(InputManager.isDown("p_left") || InputManager.isDown("p_right")
-				|| InputManager.isDown("p_down") || InputManager.isDown("p_jump")) {
-			
+		if(((InputManager.isDown("p_left") || InputManager.isDown("p_right")) && level.getPlayer().isGrounded())
+				|| (!level.getPlayer().isGrounded() && (InputManager.wasPressed("p_left") || InputManager.wasPressed("p_right")))
+				|| InputManager.wasPressed("p_jump")) {
+			level.getPhysicsEngien().update(dt);
+			VectorXf vel = level.getPlayer().getBody().getVel().clone();
+//			vel.setN(0, Math.max(vel.getN(0), 10));
+//			vel.setN(1, Math.max(vel.getN(1), 10));
+			Debug.log(vel.getN(0), vel.getN(1));
+			sendPacket(new PacketPosition(level.getPlayer().getX(), level.getPlayer().getY(), 0, "player", vel.getN(0), vel.getN(1)));
 		}
 		
 		deltaStack += dt;
 		if(deltaStack > 1f / UPDATES_PER_SECOND) {
 			
-			Vector2f vel = level.getPlayer().getBody().getVel();
-			sendPacket(new PacketPosition(level.getPlayer().getX(), level.getPlayer().getY(), 0, "player", vel.getX(), vel.getY()));
+			
 			
 			deltaStack = 0;
 		}
