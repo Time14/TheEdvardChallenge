@@ -20,7 +20,7 @@ public class StateApprentice extends GameState {
 	@Override
 	public void init() {
 		
-		level = new Level().generateEmpty(2, 2);
+		level = new Level(2, 2);
 		
 		level.setTile(6, 2, new Tile(level, level.getChunk(1, 0), 1, false));
 		
