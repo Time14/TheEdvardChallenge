@@ -72,7 +72,10 @@ public class StateMenuHost extends GameState {
 		Button back = new Button(Main.WIDTH / 2, (Main.HEIGHT / 4) * 1, 400, 100,
 				Texture.getDT("button_wood2", true)).setFont("Back", font, .5f);
 		
-		back.setClickEvent(() -> GameStateManager.enterState("Play Menu"));
+		back.setClickEvent(() -> {
+			GameStateManager.enterState("Play Menu");
+			NetworkManager.getServer().stop("You were fired!");
+		});
 		
 		gui.addElements(
 			back

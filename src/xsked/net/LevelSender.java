@@ -29,14 +29,12 @@ public class LevelSender {
 	public static final void updateApprentice(float dt) {
 		
 		//Send player position
-		if(((InputManager.isDown("p_left") || InputManager.isDown("p_right")) && level.getPlayer().isGrounded())
-				|| (!level.getPlayer().isGrounded() && (InputManager.wasPressed("p_left") || InputManager.wasPressed("p_right")))
-				|| InputManager.wasPressed("p_jump")) {
-			VectorXf vel = level.getPlayer().getBody().getVel().clone();
-//			vel.setN(0, Math.max(vel.getN(0), 10));
-//			vel.setN(1, Math.max(vel.getN(1), 10));
-			Debug.log(vel.getN(0), vel.getN(1));
-			sendPacket(new PacketPosition(level.getPlayer().getX(), level.getPlayer().getY(), 0, "player", vel.getN(0), vel.getN(1)));
+		if(InputManager.wasPressed("p_jump")
+				|| InputManager.wasPressed("p_left") || InputManager.wasReleased("p_left")
+				|| InputManager.wasPressed("p_right") || InputManager.wasReleased("p_right")) {
+			Vector2f vel = level.getPlayer().getBody().getVel();
+			sendPacket(new PacketPosition(level.getPlayer().getX(), level.getPlayer().getY(), 0, "player",
+					level.getPlayer().getSpeed(), vel.getY()));
 		}
 		
 		deltaStack += dt;
