@@ -10,7 +10,7 @@ import time.api.util.Time;
 
 public class Level {
 	
-	public static final int DRAW_DISTANCE = 1;
+	public static final int DRAW_DISTANCE = 2;
 	
 	private Chunk[][] chunks;
 	
@@ -101,15 +101,13 @@ public class Level {
 		for(int i = 0; i < 100000; i++)
 			f += psuedoRandom(0, 100);
 		
-		Debug.log("f_avg: ", f / 100000.0);
-		
 		int i = 0;
 		while(true) {
 			//Terminate the loop, I'm too tired to write it differently.
 			if (length == i) break;
 			
 			//Generate Moves
-			switch(psuedoRandom(0, Math.min(floor * 2, 12))) {
+			switch(psuedoRandom(0, Math.min(floor * 2 + 2, 12))) {
 			case(0):
 				moves[i] = new Vector2f(dir * 1, 0);
 				break;	
@@ -153,41 +151,75 @@ public class Level {
 			i++;
 		}
 		
+		//INITALIZING AWESOME LEVEL CRAETION ALGORYTHM
+		//BOTTING INTO THE MATRIX
+		
+		int lastTileX, lastTileY;
+		int currentX, currentY;
+		
 		tilesY = 0;
 		tilesX = 0;
+		
+		lastTileX = lastTileY = currentX = currentY = 0;
+		
+		int minY, maxY;	
+		minY = maxY = 0;
+		
 		for (Vector2f v : moves) {
-			tilesX += Math.floor(v.getX());
-			tilesY += Math.floor(v.getY());
+			lastTileY += Math.floor(v.getX());
+			if (lastTileY < minY)
+				minY = lastTileY;
+			if (maxY < lastTileY)
+				maxY = lastTileY;
+			
+			lastTileX += Math.floor(v.getY());
 		}
 		
-		tilesY += 4 + Chunk.TILES * 2;
-		tilesX += 4 + Chunk.TILES * 2;
+		tilesX += Math.abs(lastTileX) + Chunk.TILES * 2;
+		tilesY += Math.abs(minY) + Math.abs(maxY) + Chunk.TILES * 2;
 		
-		chunks = new Chunk[(int) Math.floor(tilesX / Chunk.SIZE)][(int) Math.floor(tilesY / Chunk.SIZE)];
 		
-		Debug.log("Tiles", tilesX, tilesY);
-		Debug.log("I am setting the tile dimensionns to something else, remove this when not debugging.");
+		chunks = new Chunk[(int) Math.floorDiv(tilesX, (int)Chunk.TILES) + 1][(int) Math.floorDiv(tilesY, (int)Chunk.TILES) + 1];
 		
-		//Generate background
-		for(int y = 0; y < tilesY; y++) {
-			for(int x = 0; x < tilesX; x++) {
-				Tile t = new Tile(this, x, y, 0, false, true);
-//				tiles[y][x] = t;
+		for(int x = 0; x < chunks.length; x++) {
+			for(int y = 0; y < chunks.length; y++) {
+				chunks[x][y] = new Chunk(x, y, this);
 			}
 		}
 		
-		//Generate floor
-		for(int x = 0; x < tilesX; x++) {
-			Tile t = new GroundTile(this, x, 0, 1);
-			
-//			tiles[0][x] = t;
-			
-			//Add Bodies
-			pe.addBody(t.getBody());
+		currentX = Chunk.TILES;
+		currentY = Math.abs(minY);
+		
+		if (dir < 0) {
+			currentX += lastTileX;
 		}
 		
+		player.setPosition(currentX * Tile.SIZE, currentY * Tile.SIZE + Tile.SIZE * 2);
+		
+		for(int m = 0; m < moves.length; m++) {
+			int tile = 1;
+			if (m != 0) {
+				if (moves[m - 1].getMagnitude() != 1.0f) {
+					tile += 1;
+				}
+			} else if (m + 1 < moves.length) {
+				if (moves[m + 1].getMagnitude() != 1.0f) {
+					tile = 2;
+				}
+			}
+			Debug.log("Coords", currentX, currentY);
+			setTile(currentX, currentY, new GroundTile(this, getChunkByTile(currentX, currentY), tile));
+			currentX += moves[m].getX();
+			currentY += moves[m].getY();
+		}
+		
+		
+		
+		
+		
+		
 		//remeber to set the player position to the start value!
-		player.setPosition(200, 400);
+//		
 	}
 	
 	public void update(float delta) {
@@ -207,14 +239,15 @@ public class Level {
 	public void draw() {
 		int x = (int)Math.floor(player.getX() / (Chunk.TILES * Tile.SIZE));
 		int y = (int)Math.floor(player.getY() / (Chunk.TILES * Tile.SIZE));
-		Debug.log("player pos:", player.getX(), player.getY());
 		for (int i = -DRAW_DISTANCE; i < DRAW_DISTANCE + 1; i++) {
 			for (int j = -DRAW_DISTANCE; j < DRAW_DISTANCE + 1; j++) {
-//				if(i + y < chunks.length && i + y > 0 && j + x < chunks[i + y].length && j + x > 0) {
-//					Debug.log(i + y, j + x);
-//					chunks[i + y][j + x].draw();
-//				}
-				chunks[y][x].draw();
+				try {
+					chunks[y + i][x + j].draw();
+				} catch (IndexOutOfBoundsException e) {
+					continue;
+				} catch (NullPointerException e) {
+					continue;
+				}
 			}
 		}
 		player.draw();
@@ -222,6 +255,13 @@ public class Level {
 	
 	public Player getPlayer() {
 		return player;
+	}
+	
+	public Chunk getChunkByTile(int x, int y) {
+		int cx = Math.floorDiv(x, Chunk.TILES);
+		int cy = Math.floorDiv(y, Chunk.TILES);
+		Debug.log(x, y, cx, cy);
+		return chunks[cy][cx];
 	}
 	
 	public Chunk getChunk(int x, int y) {
