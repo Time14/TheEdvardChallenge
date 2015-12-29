@@ -41,23 +41,43 @@ public class Level {
 //		generateLevel();
 //	}
 	
-	public Level(int floor, int seed) {
-		this.floor = floor;
-		this.seed = seed;
-
-		player = new Player(0, 0);
+	public Level() {
+		player = new Player(0, 200);
 		
 		pe = new PhysicsEngine();
 		
 		pe.setGravity(0, -800);
 		
 		pe.addBody(player.getBody());
+	}
+	
+	public Level(int floor, int seed) {
+		this();
+		this.floor = floor;
+		this.seed = seed;
 		
 		generateLevel();
 	}
 	
 	public PhysicsEngine getPhysicsEngien() {
 		return pe;
+	}
+	
+	public Level generateEmpty(int width, int height) {
+		chunks = new Chunk[height][width];
+		for(int i = 0; i < width; i++) {
+			for(int j = 0; j < height; j++) {
+				chunks[j][i] = new Chunk(i, j, this);
+			}
+		}
+		
+		for(int i = 0; i < width; i++) {
+			for(int j = 0; j < Chunk.TILES; j++) {
+				chunks[0][i].setTile(j, 0, new GroundTile(this, chunks[0][i], 1));
+			}
+		}
+		
+		return this;
 	}
 	
 	private int psuedoRandom(int min, int max) {
@@ -85,7 +105,7 @@ public class Level {
 		
 		int i = 0;
 		while(true) {
-			//Terminate the loop, I'm to tierd to write it differently.
+			//Terminate the loop, I'm too tired to write it differently.
 			if (length == i) break;
 			
 			//Generate Moves
@@ -175,18 +195,36 @@ public class Level {
 		pe.update(delta);
 	}
 	
-	public void setTile() {
+	public void setTile(int x, int y, Tile tile) {
+		int cx = Math.floorDiv(x, Chunk.TILES);
+		int tx = (x - cx * Chunk.TILES);
+		int cy = Math.floorDiv(y, Chunk.TILES);
+		int ty = (y - cy * Chunk.TILES);
 		
+		chunks[cy][cx].setTile(tx, ty, tile);
 	}
 	
 	public void draw() {
-		int x = Math.round(player.getX() / (Chunk.TILES * Tile.SIZE));
-		int y = Math.round(player.getY() / (Chunk.TILES * Tile.SIZE));
+		int x = (int)Math.floor(player.getX() / (Chunk.TILES * Tile.SIZE));
+		int y = (int)Math.floor(player.getY() / (Chunk.TILES * Tile.SIZE));
+		Debug.log("player pos:", player.getX(), player.getY());
 		for (int i = -DRAW_DISTANCE; i < DRAW_DISTANCE + 1; i++) {
 			for (int j = -DRAW_DISTANCE; j < DRAW_DISTANCE + 1; j++) {
-				chunks[i + x][j + y].draw();
+//				if(i + y < chunks.length && i + y > 0 && j + x < chunks[i + y].length && j + x > 0) {
+//					Debug.log(i + y, j + x);
+//					chunks[i + y][j + x].draw();
+//				}
+				chunks[y][x].draw();
 			}
 		}
 		player.draw();
+ 	}
+	
+	public Player getPlayer() {
+		return player;
+	}
+	
+	public Chunk getChunk(int x, int y) {
+		return chunks[y][x];
 	}
 }

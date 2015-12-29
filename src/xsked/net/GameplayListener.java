@@ -4,6 +4,7 @@ import sk.net.SKConnection;
 import sk.net.SKPacket;
 import sk.net.SKPacketListener;
 import time.api.gamestate.GameStateManager;
+import time.api.math.Vector2f;
 import xsked.states.StateMenuHost;
 
 public class GameplayListener implements SKPacketListener {
@@ -24,6 +25,13 @@ public class GameplayListener implements SKPacketListener {
 	
 	@Override
 	public void received(SKConnection connection, SKPacket packet) {
-		EventQueue.queue(packet);
+		if(packet instanceof PacketState) {
+			EventQueue.queue(packet);
+		} else if(packet instanceof PacketPosition) {
+			if(((PacketPosition) packet).TYPE.equals("player")) {
+				EventQueue.getLevel().getPlayer().setPosition(((PacketPosition) packet).X, ((PacketPosition) packet).Y);
+				EventQueue.getLevel().getPlayer().getBody().setVel(new Vector2f(((PacketPosition) packet).VX, ((PacketPosition) packet).VY));
+			}
+		}
 	}
 }

@@ -43,7 +43,7 @@ public class StateMenuConnect extends GameState {
 		
 		InputBox input = new InputBox(Main.WIDTH / 2, (Main.HEIGHT / 4) * 3, 400, 100, Texture.getDT("button_wood1", true), font, .5f);
 		
-		input.setText("Enter host IP here");
+		input.setText("localhost");
 		input.setTextCap(3 * 4 + 4);
 		
 		inputGUI.addElements(
