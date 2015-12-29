@@ -24,6 +24,8 @@ public class Player extends Entity{
 	private static final float HEIGHT = Tile.SIZE * 2.0f;
 	
 	
+	private static Tag element;
+	
 	private boolean grounded;
 	
 	private short direction;
@@ -33,8 +35,14 @@ public class Player extends Entity{
 		setRenderer(new QuadRenderer(x, y, WIDTH, HEIGHT, Texture.get("player")));
 		setBody(new Body(this.transform, WIDTH, HEIGHT).setEpsilon(0).setFriction(2f));
 		
+		element = Tag.FIRE;
+		
 		body.addTag(Tag.PLAYER.name());
 		grounded = false;
+	}
+	
+	public Tag getElement() {
+		return element;
 	}
 	
 	private void camMovement(float delta) {
