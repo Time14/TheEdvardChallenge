@@ -32,7 +32,6 @@ public class LevelSender {
 		if(((InputManager.isDown("p_left") || InputManager.isDown("p_right")) && level.getPlayer().isGrounded())
 				|| (!level.getPlayer().isGrounded() && (InputManager.wasPressed("p_left") || InputManager.wasPressed("p_right")))
 				|| InputManager.wasPressed("p_jump")) {
-			level.getPhysicsEngien().update(dt);
 			VectorXf vel = level.getPlayer().getBody().getVel().clone();
 //			vel.setN(0, Math.max(vel.getN(0), 10));
 //			vel.setN(1, Math.max(vel.getN(1), 10));
