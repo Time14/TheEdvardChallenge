@@ -1,5 +1,6 @@
 package xsked.level;
 
+import time.api.debug.Debug;
 import time.api.entity.Entity;
 import time.api.gfx.QuadRenderer;
 import time.api.gfx.VertexTex;
@@ -16,17 +17,26 @@ public class Tile extends Entity {
 	public static final int SIZE = 100;
 	
 	protected Level level;
+	protected Chunk chunk;
 	
-	private int x, y, spriteOffset;
+	protected int x, y, spriteOffset;
 	
-	public Tile(Level level, int x, int y, int spriteOffset, boolean solid, boolean absolute) {
+	public Tile(Level level, Chunk chunk, int spriteOffset, boolean solid) {
+		this(level, chunk, 0, 0, spriteOffset, solid, true);
+	}
+	
+	public Tile(Level level, Chunk chunk,  int x, int y, int spriteOffset, boolean solid, boolean absolute) {
 		this.level = level;
+		this.chunk = chunk;
 		this.spriteOffset = spriteOffset;
 		this.x = x;
 		this.y = y;
 		
-		transform = new Transform(x * SIZE, y * SIZE);
+		transform = new Transform(0, 0);
 		body = new Body(transform, SIZE, SIZE).setTrigger(!solid).setAbsolute(absolute).setEpsilon(0).setFriction(10);
+		level.getPhysicsEngien().addBody(body);
+		
+		updateCollider();
 	}
 	
 	public int getSpriteOffset() {
@@ -62,5 +72,9 @@ public class Tile extends Entity {
 		);
 		
 		return data;
+	}
+	
+	public void updateCollider() {
+		transform.setPosition((x + chunk.x * Chunk.TILES) * SIZE, (y + chunk.y * Chunk.TILES) * SIZE);
 	}
 }

@@ -5,12 +5,13 @@ import org.lwjgl.opengl.GL11;
 import time.api.gamestate.GameState;
 import xsked.level.Chunk;
 import xsked.level.Level;
+import xsked.level.Tile;
+import xsked.net.EventQueue;
+import xsked.net.LevelSender;
 
 public class StateApprentice extends GameState {
 	
 	private Level level;
-	
-	private Chunk temp;
 	
 	public StateApprentice() {
 		super("Apprentice");
@@ -18,15 +19,19 @@ public class StateApprentice extends GameState {
 	
 	@Override
 	public void init() {
-//		level = new Level(100, 100);
-		temp = new Chunk(0, 0, null);
+		
+		level = new Level().generateEmpty(2, 2);
+		
+		level.setTile(6, 2, new Tile(level, level.getChunk(1, 0), 1, false));
+		
+//		LevelSender.setLevel(level);
+//		EventQueue.setLevel(level);
 	}
 	
 	@Override
 	public void draw() {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-		temp.draw();
-//		level.draw();
+		level.draw();
 	}
 	
 	@Override
@@ -40,6 +45,8 @@ public class StateApprentice extends GameState {
 	
 	@Override
 	public void update(float dt) {
-//		level.update(dt);
+		level.update(dt);
+//		LevelSender.updateApprentice(dt);
+//		EventQueue.process();
 	}
 }
