@@ -4,6 +4,8 @@ import org.lwjgl.opengl.GL11;
 
 import time.api.gamestate.GameState;
 import xsked.level.Level;
+import xsked.net.EventQueue;
+import xsked.net.LevelSender;
 
 public class StateApprentice extends GameState {
 	
@@ -15,7 +17,11 @@ public class StateApprentice extends GameState {
 	
 	@Override
 	public void init() {
+		
 		level = new Level(10, 10, 0);
+		
+		LevelSender.setLevel(level);
+		EventQueue.setLevel(level);
 	}
 	
 	@Override
@@ -36,5 +42,7 @@ public class StateApprentice extends GameState {
 	@Override
 	public void update(float dt) {
 		level.update(dt);
+		LevelSender.updateApprentice(dt);
+		EventQueue.process();
 	}
 }
