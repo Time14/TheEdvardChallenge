@@ -17,7 +17,7 @@ public class StateWizard extends GameState {
 	
 	@Override
 	public void init() {
-		level = new Level(0, 0);
+		level = new Level().generateEmpty(2, 2);
 		
 		LevelSender.setLevel(level);
 		EventQueue.setLevel(level);
