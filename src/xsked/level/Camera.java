@@ -1,7 +1,10 @@
 package xsked.level;
 
+import time.api.gamestate.GameStateManager;
 import time.api.gfx.shader.OrthographicShaderProgram;
 import time.api.math.Matrix4f;
+import time.api.math.Vector2f;
+import xsked.Main;
 
 public class Camera {
 	
@@ -33,5 +36,9 @@ public class Camera {
 	
 	public static final void pop() {
 		OrthographicShaderProgram.INSTANCE.sendMatrix("m_view", new Matrix4f().loadIdentity());
+	}
+	
+	public static final Vector2f getMouseCoords() {
+		return (Vector2f) OrthographicShaderProgram.INSTANCE.getMouseClipspaceCoordinates(GameStateManager.getGame().getWindow(), Main.WIDTH, Main.HEIGHT).add(new Vector2f(x, y));
 	}
 }
