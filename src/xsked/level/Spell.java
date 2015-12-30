@@ -41,6 +41,8 @@ public class Spell extends Entity {
 		body.addTag(type.name());
 		level.getPhysicsEngine().addBody(body);
 		
+//		transform.setRotation((float) Math.toDegrees(Math.asin(Math.abs(dir.getY() / dir.getX()))));
+		
 		initAnimations();
 	}
 	
@@ -93,13 +95,13 @@ public class Spell extends Entity {
 				159, 158, 157, 156, 155, 154, 153, 152).setSpeed(14));
 		//wind
 		animations.put("r_idle_wind", new Animation((DynamicTexture) renderer.getTexture(),
-				0, 1, 2, 3).setSpeed(8));
+				48, 49, 50, 51).setSpeed(8));
 		
 		animations.put("l_idle_wind", new Animation((DynamicTexture) renderer.getTexture(),
-				143, 142, 141, 140).setSpeed(8));
+				191, 190, 189, 188).setSpeed(8));
 		//water
 		animations.put("r_idle_water", new Animation((DynamicTexture) renderer.getTexture(),
-				48, 49, 50, 51).setSpeed(8));
+				32, 33, 34, 35).setSpeed(8));
 		
 		animations.put("l_idle_water", new Animation((DynamicTexture) renderer.getTexture(),
 				175, 174, 173, 172).setSpeed(8));
