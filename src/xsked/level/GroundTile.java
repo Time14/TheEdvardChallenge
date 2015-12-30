@@ -22,8 +22,8 @@ public class GroundTile extends Tile{
 		groundTrigger = new Body(0, 0, Tile.SIZE * 0.9f, HEIGHT)
 				.setTrigger(true).setAbsolute(true);
 		groundTrigger.addTag(Tag.GROUND.name());
-		level.getPhysicsEngien().addBody(groundTrigger);
-		level.getPhysicsEngien().addBody(body);
+		level.getPhysicsEngine().addBody(groundTrigger);
+		level.getPhysicsEngine().addBody(body);
 		
 		updateCollider();
 	}
