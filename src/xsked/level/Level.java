@@ -5,6 +5,8 @@ import time.api.entity.EntityManager;
 import time.api.gfx.texture.Texture;
 import time.api.input.InputManager;
 import time.api.math.Vector2f;
+import time.api.math.Vector3f;
+import time.api.physics.Collision;
 import time.api.physics.PhysicsEngine;
 import time.api.util.Time;
 
@@ -46,7 +48,11 @@ public class Level {
 		
 		pe = new PhysicsEngine();
 		
+//		pe.useSetp(false);
+		Collision.setMoveConstant(0.3f);
+		
 		pe.setGravity(0, -800);
+		Collision.setMoveConstant(0.3f);
 		
 		pe.addBody(player.getBody());
 	}
@@ -93,147 +99,99 @@ public class Level {
 		//Jump events
 		//Walk, left/Right
 		
-		int length = Math.min(floor * 2, 20);
-		Vector2f[] moves = new Vector2f[length];
+		//Probs static later
+		int startWidth = 3;
+		
+		int length = Math.min(floor * 2 + 2, 10);
+		Vector3f[] moves = new Vector3f[length];
 		int dir = ((floor % 2) * 2) - 1;
-		
-		int f = 0;
-		for(int i = 0; i < 100000; i++)
-			f += psuedoRandom(0, 100);
-		
-		int i = 0;
-		while(true) {
-			//Terminate the loop, I'm too tired to write it differently.
-			if (length == i) break;
+//		dir = 1;
+
+		for (int i = 0; i < moves.length; i++) {
+			int r = psuedoRandom(2, Math.min(floor + 4, 5));
+			int l = psuedoRandom(1, 3);
+			if (i == moves.length - 1) l = startWidth;
+			int dx = psuedoRandom(l, Math.min(floor + 1 + l, 5));
+			int dy = (int) ((psuedoRandom(0, 1) * 2 - 1) * Math.sqrt(Math.abs(r * r - dx * dx)));
 			
-			//Generate Moves
-			switch(psuedoRandom(0, Math.min(floor * 2 + 2, 12))) {
-			case(0):
-				moves[i] = new Vector2f(dir * 1, 0);
-				break;	
-			case(1):
-				moves[i] = new Vector2f(dir * 2, 1);
-				break;
-			case(2):
-				moves[i] = new Vector2f(dir * 1, -1);
-				break;
-			case(3):
-				moves[i] = new Vector2f(dir * 4, 0);
-				break;
-			case(4):
-				moves[i] = new Vector2f(dir * 2, 2);
-				break;
-			case(5):
-				moves[i] = new Vector2f(dir * 3, 2);
-				break;
-			case(6):
-				moves[i] = new Vector2f(dir * 4, -1);
-				break;
-			case(7):
-				moves[i] = new Vector2f(dir * 2, 2);
-				break;
-			case(8):
-				moves[i] = new Vector2f(dir * 5, -4);
-				break;
-			case(9):
-				moves[i] = new Vector2f(dir * 3, 2);
-				break;
-			case(10):
-				moves[i] = new Vector2f(dir * 1, -3);
-				break;
-			case(11):
-				moves[i] = new Vector2f(dir * 5, -6);
-				break;
-			default:
-				moves[i] = new Vector2f(0, 0);
-				break;
-			}
-			i++;
+			moves[i] = new Vector3f(dx, dy, l);
 		}
 		
 		//INITALIZING AWESOME LEVEL CRAETION ALGORYTHM
 		//BOTTING INTO THE MATRIX
 		
-		int lastTileX, lastTileY;
-		int currentX, currentY;
 		
-		tilesY = 0;
-		tilesX = 0;
 		
-		lastTileX = lastTileY = currentX = currentY = 0;
 		
-		int minY, maxY;	
-		minY = maxY = 0;
+		int minY = 0;
+		int maxY = 0;
 		
-		for (Vector2f v : moves) {
-			lastTileY += Math.floor(v.getX());
-			if (lastTileY < minY)
-				minY = lastTileY;
-			if (maxY < lastTileY)
-				maxY = lastTileY;
+		int lastTileX = 0;
+		int lastTileY = 0;
+		for (Vector3f m : moves) {
+			lastTileX += m.getX() + m.getZ();
 			
-			lastTileX += Math.floor(v.getY());
+			lastTileY += m.getY();
+			
+			if (lastTileY < minY) minY = lastTileY;
+			if (maxY < lastTileY) maxY = lastTileY;
 		}
 		
-		tilesX += Math.abs(lastTileX) + Chunk.TILES * 2;
-		tilesY += Math.abs(minY) + Math.abs(maxY) + Chunk.TILES * 2;
+		//Probs static later.
+		int padding = 2;
 		
+		tilesX = Math.abs(lastTileX);
+		tilesY = Math.abs(minY) + Math.abs(maxY);
 		
-		chunks = new Chunk[(int) Math.floorDiv(tilesX, (int)Chunk.TILES) + 1][(int) Math.floorDiv(tilesY, (int)Chunk.TILES) + 1];
+		chunks = new Chunk[(int) Math.ceil((float)tilesX / (float)Chunk.TILES) + 2 * padding][(int) Math.ceil((float)tilesY / (float)Chunk.TILES) + 2 * padding];
 		
-		for(int x = 0; x < chunks.length; x++) {
-			for(int y = 0; y < chunks.length; y++) {
-				chunks[x][y] = new Chunk(x, y, this);
+		for(int a = 0; a < chunks.length; a++) {
+			for(int b = 0; b < chunks[a].length; b++) {
+				chunks[a][b] = new Chunk(a, b, this);
 			}
 		}
 		
-		currentX = Chunk.TILES;
-		currentY = Math.abs(minY);
+		int currentX = (int) (Chunk.TILES * padding);
+		int currentY = (int) (Math.abs(minY) + (Chunk.TILES * padding));
 		
 		if (dir < 0) {
 			currentX += lastTileX;
 		}
 		
-		player.setPosition(currentX * Tile.SIZE, currentY * Tile.SIZE + Tile.SIZE * 2);
+		makePlatform(currentX - dir * startWidth, currentY, startWidth, dir);
 		
-		for(int m = 0; m < moves.length; m++) {
-			int tile = 1;
-			if (m != 0) {
-				if (moves[m - 1].getMagnitude() != 1.0f) {
-					tile += 1;
-				}
-			} else if (m + 1 < moves.length) {
-				if (moves[m + 1].getMagnitude() != 1.0f) {
-					tile = 2;
-				}
-			}
-			Debug.log("Coords", currentX, currentY);
-			setTile(currentX, currentY, new GroundTile(this, getChunkByTile(currentX, currentY), tile));
-			currentX += moves[m].getX();
-			currentY += moves[m].getY();
+		player.setPosition(((currentX - dir * startWidth * 0.5f + 0.5f) * Tile.SIZE), (currentY + 2) * Tile.SIZE);
+		Camera.setPosition(player.getX(), player.getY());
+		
+		for(Vector3f move : moves) {
+			
+			Debug.log(currentX, currentY, "Stuff");
+
+			currentX += dir * move.getX();
+			currentY += move.getY();
+			makePlatform(currentX, currentY, (int) move.getZ(), dir);
+			currentX += dir * move.getZ();
 		}
-		
-		
-		
-		
-		
-		
-		//remeber to set the player position to the start value!
-//		
 	}
 	
 	public void update(float delta) {
-		player.p_update(delta);
 		pe.update(delta);
+		player.p_update(delta);
 	}
 	
-	public void setTile(int x, int y, Tile tile) {
-		int cx = Math.floorDiv(x, Chunk.TILES);
-		int tx = (x - cx * Chunk.TILES);
-		int cy = Math.floorDiv(y, Chunk.TILES);
-		int ty = (y - cy * Chunk.TILES);
-		
-		chunks[cy][cx].setTile(tx, ty, tile);
+	public void setTile(int x, int y, int spriteOffset, boolean isGround) {
+		Chunk c = getChunkByTile(x, y);
+		if (isGround)
+			c.setTile(x % Chunk.TILES, y % Chunk.TILES, new GroundTile(this, c, spriteOffset));
+		else
+			c.setTile(x % Chunk.TILES, y % Chunk.TILES, new Tile(this, c, spriteOffset, false));
+	}
+	
+	public void makePlatform(int x, int y, int l, int dir) {
+		for (int o = 0; o < l; o++) {
+			Debug.log("Platform", (x + dir * o), y);
+			setTile((int) (x + dir * o), y, 2, true);
+		}
 	}
 	
 	public void draw() {
@@ -242,7 +200,7 @@ public class Level {
 		for (int i = -DRAW_DISTANCE; i < DRAW_DISTANCE + 1; i++) {
 			for (int j = -DRAW_DISTANCE; j < DRAW_DISTANCE + 1; j++) {
 				try {
-					chunks[y + i][x + j].draw();
+					chunks[x + i][y + j].draw();
 				} catch (IndexOutOfBoundsException e) {
 					continue;
 				} catch (NullPointerException e) {
@@ -258,10 +216,10 @@ public class Level {
 	}
 	
 	public Chunk getChunkByTile(int x, int y) {
-		int cx = Math.floorDiv(x, Chunk.TILES);
-		int cy = Math.floorDiv(y, Chunk.TILES);
-		Debug.log(x, y, cx, cy);
-		return chunks[cy][cx];
+		int cx = (int)Math.floorDiv(x, (Chunk.TILES));
+		int cy = (int)Math.floorDiv(y, (Chunk.TILES));
+		Debug.log("Cunk", x, y, cx, cy);
+		return chunks[cx][cy];
 	}
 	
 	public Chunk getChunk(int x, int y) {
