@@ -14,6 +14,8 @@ import time.api.math.VectorXf;
 import time.api.physics.Body;
 import xsked.Main;
 import xsked.level.Spell.SpellType;
+import xsked.net.LevelSender;
+import xsked.net.PacketPlayerDeath;
 
 public class Player extends Entity{
 	
@@ -37,6 +39,8 @@ public class Player extends Entity{
 	
 	private boolean grounded;
 	
+	private boolean dead;
+	
 	private int direction = 1;
 	private VectorXf flatVector = new VectorXf(1, 0);
 	
@@ -50,11 +54,14 @@ public class Player extends Entity{
 	
 	private QuadRenderer icon;
 	
-	public Player(float x, float y, int mode) {
+	private Level level;
+	
+	public Player(Level level, float x, float y, int mode) {
 		setRenderer(new QuadRenderer(x, y, WIDTH, HEIGHT, Texture.getDT("player", true)));
 		setBody(new Body(this.transform, WIDTH, HEIGHT).setEpsilon(0).setFriction(0f));
 		
 		this.MODE = mode;
+		this.level = level;
 		
 		icon = new QuadRenderer(0, 0, WIDTH / 3, WIDTH / 3, Texture.get("element_" + element.name().toLowerCase()));
 		
@@ -62,6 +69,7 @@ public class Player extends Entity{
 		
 		body.addTag(Tag.PLAYER.name());
 		grounded = false;
+		dead = false;
 	}
 	
 	public void switchElement(SpellType element) {
@@ -93,6 +101,11 @@ public class Player extends Entity{
 		
 		//CameraMovement
 		camMovement(delta);
+		
+		if(dead) {
+			currentAnimation.update(delta);
+			return;
+		}
 		
 		//Ground Check
 		if (body.isCollidingWith(Tag.GROUND.name())) {
@@ -144,6 +157,11 @@ public class Player extends Entity{
 			}
 		}
 		
+		if(!dead && body.isCollidingWith(Tag.LEATHAL.name())) {
+			LevelSender.sendPacket(new PacketPlayerDeath());
+			kill();
+		}
+		
 		if (MAX_SPEED < Math.abs(body.getVel().dot(flatVector))) {
 			body.setVel(new Vector2f(direction * MAX_SPEED, body.getVel().getY()));
 		}
@@ -153,8 +171,10 @@ public class Player extends Entity{
 	
 	public void draw() {
 		super.draw();
-		icon.setPosition(getX(), getY() + WIDTH);
-		icon.draw();
+		if(icon != null) {
+			icon.setPosition(getX(), getY() + WIDTH);
+			icon.draw();
+		}
 	}
 	
 	public void setCanMove(boolean canMove) {
@@ -200,6 +220,23 @@ public class Player extends Entity{
 		return speed;
 	}
 	
+	public boolean isDead() {
+		return dead;
+	}
+	
+	public void kill() {
+		if(dead)
+			return;
+		dead = true;
+		setAnimation("death");
+		body.freezeVelocity();
+		level.deletePhysicsEngine();
+		level.clearGhosts();
+		level.clearSpells();
+		icon.getMesh().destroy();
+		icon = null;
+	}
+	
 	private void initAnimations() {
 		
 		animations = new HashMap<>();
@@ -221,6 +258,12 @@ public class Player extends Entity{
 		
 		animations.put("l_jump", new Animation((DynamicTexture) renderer.getTexture(),
 				74, 73, -1, 72, -1, 71).setSpeed(10));
+		
+		animations.put("r_death", new Animation((DynamicTexture)renderer.getTexture(),
+				16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, -1).setSpeed(10));
+		
+		animations.put("l_death", new Animation((DynamicTexture)renderer.getTexture(),
+				95, 94, 93, 92, 91, 90, 89, 88, 87, 86, 85, -1).setSpeed(10));
 		
 		setAnimation("idle");
 	}

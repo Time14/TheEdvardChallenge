@@ -3,9 +3,11 @@ package xsked.states;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
+import time.api.debug.Debug;
 import time.api.gamestate.GameState;
 import time.api.input.InputManager;
 import time.api.math.Vector2f;
+import time.api.util.Time;
 import xsked.level.Camera;
 import xsked.level.Chunk;
 import xsked.level.Level;
@@ -54,20 +56,23 @@ public class StateApprentice extends GameState {
 		if(dt > .3f)
 			return;
 		
-		if(InputManager.wasPressed("e_fire")) {
-			level.getPlayer().switchElement(SpellType.FIRE);
-			LevelSender.sendPacket(new PacketSwitchElement(SpellType.FIRE));
-		} else if(InputManager.wasPressed("e_wind")) {
-			level.getPlayer().switchElement(SpellType.WIND);
-			LevelSender.sendPacket(new PacketSwitchElement(SpellType.WIND));
-		} else if(InputManager.wasPressed("e_earth")) {
-			level.getPlayer().switchElement(SpellType.EARTH);
-			LevelSender.sendPacket(new PacketSwitchElement(SpellType.EARTH));
-		} else if(InputManager.wasPressed("e_water")) {
-			level.getPlayer().switchElement(SpellType.WATER);
-			LevelSender.sendPacket(new PacketSwitchElement(SpellType.WATER));
-		}
+//		Debug.log(Time.getFPS());
 		
+		if(!level.getPlayer().isDead()) {
+			if(InputManager.wasPressed("e_fire")) {
+				level.getPlayer().switchElement(SpellType.FIRE);
+				LevelSender.sendPacket(new PacketSwitchElement(SpellType.FIRE));
+			} else if(InputManager.wasPressed("e_wind")) {
+				level.getPlayer().switchElement(SpellType.WIND);
+				LevelSender.sendPacket(new PacketSwitchElement(SpellType.WIND));
+			} else if(InputManager.wasPressed("e_earth")) {
+				level.getPlayer().switchElement(SpellType.EARTH);
+				LevelSender.sendPacket(new PacketSwitchElement(SpellType.EARTH));
+			} else if(InputManager.wasPressed("e_water")) {
+				level.getPlayer().switchElement(SpellType.WATER);
+				LevelSender.sendPacket(new PacketSwitchElement(SpellType.WATER));
+			}
+		}
 		level.update(dt);
 		LevelSender.updateApprentice(dt);
 		EventQueue.process();

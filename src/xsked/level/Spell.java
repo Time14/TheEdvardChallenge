@@ -1,8 +1,12 @@
 package xsked.level;
 
+import java.util.HashMap;
+
 import time.api.debug.Debug;
 import time.api.entity.Entity;
 import time.api.gfx.QuadRenderer;
+import time.api.gfx.texture.Animation;
+import time.api.gfx.texture.DynamicTexture;
 import time.api.gfx.texture.Texture;
 import time.api.math.Vector2f;
 import time.api.physics.Body;
@@ -21,6 +25,9 @@ public class Spell extends Entity {
 	
 	private Vector2f dir;
 	
+	private HashMap<String, Animation> animations;
+	private Animation currentAnimation;
+	
 	private float health = MAX_HEALTH;
 	
 	public Spell(Level level, float x, float  y, SpellType type, float speed, Vector2f dir) {
@@ -29,23 +36,76 @@ public class Spell extends Entity {
 		this.speed = speed;
 		this.dir = dir;
 		
-		setRenderer(new QuadRenderer(x, y, SIZE, SIZE, Texture.get("element_" + type.name().toLowerCase())));
+		setRenderer(new QuadRenderer(x, y, SIZE, SIZE, Texture.getDT("spells", true)));
 		body = new Body(transform, SIZE, SIZE).setTrigger(true).setAbsolute(true);
 		body.addTag(type.name());
-		level.getPhysicsEngien().addBody(body);
+		level.getPhysicsEngine().addBody(body);
+		
+		initAnimations();
 	}
 	
 	public void update(float delta) {
 		body.getPos().add(dir.clone().scale(speed * delta));
 		health -= delta;
 		
+		if(body.isCollidingWith(Tag.LEATHAL.name()))
+			health = 0;
 		
+		currentAnimation.update(delta);
 		
 		if(health <= 0) {
 			renderer.getMesh().destroy();
 			Debug.log("TODO: remove spell bodies from physics engine");
 			level.removeSpell(this);
 		}
+	}
+	
+	public void setAnimation(String animation) {
+		String prefix = dir.getX() > 0 ? "r_" : "l_";
+		
+		currentAnimation = animations.get(prefix + animation + "_" + TYPE.name().toLowerCase());
+		
+		currentAnimation.reset();
+	}
+	
+	public boolean isAnimation(String animation) {
+		String prefix = dir.getX() > 0 ? "r_" : "l_";
+		
+		return animations.get(prefix + animation + "_" + TYPE.name().toLowerCase()) == currentAnimation;
+	}
+	
+	private void initAnimations() {
+		
+		animations = new HashMap<>();
+		
+		//earth
+		animations.put("r_idle_earth", new Animation((DynamicTexture) renderer.getTexture(),
+				0, 1, 2, 3).setSpeed(8));
+		
+		animations.put("l_idle_earth", new Animation((DynamicTexture) renderer.getTexture(),
+				143, 142, 141, 140).setSpeed(8));
+		
+		//fire
+		animations.put("r_idle_fire", new Animation((DynamicTexture) renderer.getTexture(),
+				16, 17, 18, 19, 20, 21, 22, 23).setSpeed(14));
+		
+		animations.put("l_idle_fire", new Animation((DynamicTexture) renderer.getTexture(),
+				159, 158, 157, 156, 155, 154, 153, 152).setSpeed(14));
+		//wind
+		animations.put("r_idle_wind", new Animation((DynamicTexture) renderer.getTexture(),
+				0, 1, 2, 3).setSpeed(8));
+		
+		animations.put("l_idle_wind", new Animation((DynamicTexture) renderer.getTexture(),
+				143, 142, 141, 140).setSpeed(8));
+		//water
+		animations.put("r_idle_water", new Animation((DynamicTexture) renderer.getTexture(),
+				48, 49, 50, 51).setSpeed(8));
+		
+		animations.put("l_idle_water", new Animation((DynamicTexture) renderer.getTexture(),
+				175, 174, 173, 172).setSpeed(8));
+		
+		
+		setAnimation("idle");
 	}
 	
 	public enum SpellType {

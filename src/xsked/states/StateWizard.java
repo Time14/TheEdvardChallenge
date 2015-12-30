@@ -44,7 +44,7 @@ public class StateWizard extends GameState {
 	
 	@Override
 	public void onMouse(long window, int button, int action, int mods) {
-		if(action == GLFW.GLFW_PRESS && button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+		if(action == GLFW.GLFW_PRESS && button == GLFW.GLFW_MOUSE_BUTTON_LEFT && !level.getPlayer().isDead()) {
 			Vector2f mousePos = Camera.getMouseCoords();
 			
 			float atan2 = (float) Math.atan2(mousePos.getY() - level.getPlayer().getY(), mousePos.getX() - level.getPlayer().getX());

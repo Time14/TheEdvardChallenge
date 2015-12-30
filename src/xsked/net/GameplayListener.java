@@ -30,6 +30,8 @@ public class GameplayListener implements SKPacketListener {
 		} else if(packet instanceof PacketPosition) {
 			PacketPosition p = (PacketPosition) packet;
 			if(p.TYPE.equals("player")) {
+				if(EventQueue.getLevel().getPlayer().isDead())
+					return;
 				EventQueue.getLevel().getPlayer().getBody().setPos(new Vector2f(p.X, p.Y));
 				EventQueue.getLevel().getPlayer().getBody().setVel(
 						new Vector2f(p.VX, p.VY));
@@ -38,7 +40,7 @@ public class GameplayListener implements SKPacketListener {
 		} else if(packet instanceof PacketSwitchElement) {
 			PacketSwitchElement p = (PacketSwitchElement) packet;
 			EventQueue.getLevel().getPlayer().switchElement(p.ELEMENT);
-		}else if(packet instanceof PacketSummonSpell || packet instanceof PacketSummonGhost) {
+		}else if(packet instanceof PacketSummonSpell || packet instanceof PacketSummonGhost || packet instanceof PacketPlayerDeath) {
 			EventQueue.queue(packet);
 		}
 	}
