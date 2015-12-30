@@ -49,6 +49,7 @@ public class StateMenuMain extends GameState {
 		AudioLibrary.registerAudio("landing", new Audio("res/sounds/landing.wav"));
 		AudioLibrary.registerAudio("step", new Audio("res/sounds/step.wav"));
 		
+		AudioManager.playLoop(0, 0.5f, 1.0f, "song");
 		
 		gui = new GUI();
 		
