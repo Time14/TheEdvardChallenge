@@ -59,6 +59,7 @@ public class Spell extends Entity {
 			renderer.getMesh().destroy();
 			Debug.log("TODO: remove spell bodies from physics engine");
 			level.removeSpell(this);
+			level.getPhysicsEngine().removeBody(body);
 		}
 	}
 	
