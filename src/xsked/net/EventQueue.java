@@ -22,13 +22,12 @@ public class EventQueue {
 				GameStateManager.enterState(((PacketState) packet).STATE);
 			}
 			
-			if(packet instanceof PacketPosition) {
-				switch(((PacketPosition) packet).TYPE) {
-				case "player":
-					level.getPlayer().setPosition(((PacketPosition) packet).X, ((PacketPosition) packet).Y);
-					level.getPlayer().getBody().setVel(new Vector2f(((PacketPosition) packet).VX, ((PacketPosition) packet).VY));
-					break;
-				}
+			if(packet instanceof PacketSummonSpell) {
+				PacketSummonSpell p = (PacketSummonSpell) packet;
+				level.summonSpell(p.X, p.Y, p.TYPE, new Vector2f(p.DX, p.DY));
+			} else if(packet instanceof PacketSummonGhost) {
+				PacketSummonGhost p = (PacketSummonGhost) packet;
+				level.summonGhost(p.X, p.Y, p.TYPE);
 			}
 		}
 	}

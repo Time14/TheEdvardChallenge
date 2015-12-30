@@ -48,7 +48,7 @@ public class LevelSender {
 		
 	}
 	
-	private static final void sendPacket(SKPacket packet) {
+	public static final void sendPacket(SKPacket packet) {
 		if(NetworkManager.isClient())
 			NetworkManager.getClient().send(packet);
 		else if(NetworkManager.isServer())

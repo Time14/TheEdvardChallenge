@@ -35,6 +35,11 @@ public class GameplayListener implements SKPacketListener {
 						new Vector2f(p.VX, p.VY));
 				EventQueue.getLevel().getPlayer().setSpeed(p.VX);
 			}
+		} else if(packet instanceof PacketSwitchElement) {
+			PacketSwitchElement p = (PacketSwitchElement) packet;
+			EventQueue.getLevel().getPlayer().switchElement(p.ELEMENT);
+		}else if(packet instanceof PacketSummonSpell || packet instanceof PacketSummonGhost) {
+			EventQueue.queue(packet);
 		}
 	}
 }

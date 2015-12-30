@@ -5,50 +5,61 @@ import time.api.gfx.QuadRenderer;
 import time.api.gfx.texture.Texture;
 import time.api.math.Vector2f;
 import time.api.physics.Body;
+import xsked.level.Spell.SpellType;
 
 public class Ghost extends Entity{
 	
-	public static final float GHOST_SPEED = 10.0f;
+	public static final float SIZE = Tile.SIZE;
+	
+	public static final float SPEED = 100.0f;
 	
 	private Level level;
 	private Player player;
-	private Tag weakness;
-	private boolean isDead;
+	private SpellType weakness;
 	
-	public Ghost(Level level, float x, float y) {
-		super();
+	private QuadRenderer icon;
+	
+	public Ghost(Level level, float x, float y, SpellType weakness, boolean showIcon) {
 		this.level = level;
 		this.player = level.getPlayer();
+		this.weakness = weakness;
 		
-		isDead = false;
-		
-		this.setRenderer(new QuadRenderer(x * Tile.SIZE, y * Tile.SIZE, Tile.SIZE, Tile.SIZE, Texture.DEFAULT_TEXTURE));
-		Body b = new Body(transform, Tile.SIZE, Tile.SIZE).setTrigger(true);
-		b.addTag(Tag.LEATHAL.name());
-		this.setBody(b);
+		this.setRenderer(new QuadRenderer(x, y, SIZE, SIZE, Texture.get("ghost")));
+		body = new Body(transform, SIZE, SIZE).setTrigger(true).setAbsolute(true);
+		body.addTag(Tag.LEATHAL.name());
+		level.getPhysicsEngien().addBody(body);
+		if(showIcon)
+			icon = new QuadRenderer(0, 0, SIZE / 3, SIZE / 3, Texture.get("element_" + weakness.name().toLowerCase()));
 	}
 	
-	public void setWeakness(Tag tag) {
-		weakness = tag;
+	public void setWeakness(SpellType element) {
+		weakness = element;
 	}
 	
 	public void update(float delta) {
-		if (isDead) return;
 		
-		super.update(delta);
-		
-		if (body.isCollidingWith(weakness.name())) 
+		if(body.isCollidingWith(weakness.name())) {
 			die();
+		}
 		
 		Vector2f dp = new Vector2f(player.getX() - getX(), player.getY() - getY());
-		dp.scale(((float) (1.0/dp.getMagnitude()) * GHOST_SPEED));
-		body.setVel((Vector2f) body.getVel().scale(0.5f));
-		body.addVel(dp);
+		dp.scale(((float) (1.0/dp.getMagnitude()) * SPEED));
+		
+		body.getPos().add(dp.scale(delta));
 	}
 	
 	private void die() {
-		isDead = true;
-		this.renderer = null;
-		this.body.setPos(new Vector2f(0, -100));
+		this.renderer.getMesh().destroy();
+		if(icon != null)
+			icon.getMesh().destroy();
+		level.removeGhost(this);
+	}
+	
+	public void draw() {
+		super.draw();
+		if(icon != null) {
+			icon.setPosition(renderer.getX(), renderer.getY() + Tile.SIZE);
+			icon.draw();
+		}
 	}
 }	
