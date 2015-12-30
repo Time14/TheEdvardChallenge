@@ -53,6 +53,7 @@ public class Ghost extends Entity{
 		if(icon != null)
 			icon.getMesh().destroy();
 		level.removeGhost(this);
+		level.getPhysicsEngine().removeBody(body);
 	}
 	
 	public void draw() {
