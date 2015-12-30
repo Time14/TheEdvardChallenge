@@ -27,7 +27,7 @@ public class Ghost extends Entity{
 		this.setRenderer(new QuadRenderer(x, y, SIZE, SIZE, Texture.get("ghost")));
 		body = new Body(transform, SIZE, SIZE).setTrigger(true).setAbsolute(true);
 		body.addTag(Tag.LEATHAL.name());
-		level.getPhysicsEngien().addBody(body);
+		level.getPhysicsEngine().addBody(body);
 		if(showIcon)
 			icon = new QuadRenderer(0, 0, SIZE / 3, SIZE / 3, Texture.get("element_" + weakness.name().toLowerCase()));
 	}
