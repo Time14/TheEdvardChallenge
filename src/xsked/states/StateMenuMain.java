@@ -4,6 +4,9 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
 import time.api.Game;
+import time.api.audio.Audio;
+import time.api.audio.AudioLibrary;
+import time.api.audio.AudioManager;
 import time.api.debug.Debug;
 import time.api.gamestate.GameState;
 import time.api.gamestate.GameStateManager;
@@ -38,6 +41,14 @@ public class StateMenuMain extends GameState {
 	public void init() {
 		if(!initialized)
 			setup();
+		
+		AudioManager.start();
+		
+		AudioLibrary.registerAudio("song", new Audio("res/sounds/EdvardsSong.wav"));
+		AudioLibrary.registerAudio("jump", new Audio("res/sounds/jump.wav"));
+		AudioLibrary.registerAudio("landing", new Audio("res/sounds/landing.wav"));
+		AudioLibrary.registerAudio("step", new Audio("res/sounds/step.wav"));
+		
 		
 		gui = new GUI();
 		
