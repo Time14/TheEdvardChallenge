@@ -101,6 +101,7 @@ public class StateMenuMain extends GameState {
 		Camera.push();
 		
 		GL11.glDisable(GL11.GL_POLYGON_SMOOTH);
+		GL11.glHint(GL11.GL_POLYGON_SMOOTH_HINT, GL11.GL_FASTEST);
 		
 		GLFW.glfwSwapInterval(1);
 		
@@ -112,6 +113,8 @@ public class StateMenuMain extends GameState {
 		
 		SpriteSheet.register("player", new SpriteSheet(16, 8, 16, 32).loadTexture("res/texture/apprentice/apprenticeSheet.png"));
 		
+		SpriteSheet.register("elements", new SpriteSheet(2, 2, 16, 16).loadTexture("res/texture/apprentice/elements.png"));
+		
 		//Textures
 		Texture.register("button_wood1", new DynamicTexture(SpriteSheet.get("button_wood1")));
 		Texture.register("button_wood2", new DynamicTexture(SpriteSheet.get("button_wood2")));
@@ -120,16 +123,34 @@ public class StateMenuMain extends GameState {
 		
 		Texture.register("player", new DynamicTexture(SpriteSheet.get("player")));
 		
+		Texture.register("spell_wind", new Texture("res/texture/apprentice/spell_wind.png"));
+		Texture.register("spell_earth", new Texture("res/texture/apprentice/spell_earth.png"));
+		Texture.register("spell_water", new Texture("res/texture/apprentice/spell_water.png"));
+		Texture.register("spell_fire", new Texture("res/texture/apprentice/spell_fire.png"));
+		
+		Texture.register("element_wind", SpriteSheet.get("elements").getTexture(0, 0));
+		Texture.register("element_water", SpriteSheet.get("elements").getTexture(1, 0));
+		Texture.register("element_fire", SpriteSheet.get("elements").getTexture(0, 1));
+		Texture.register("element_earth", SpriteSheet.get("elements").getTexture(1, 1));
+		
+		Texture.register("ghost", new Texture("res/texture/ghost.png"));
+		
 		//Register keys
 		InputManager.registerKey(GLFW.GLFW_KEY_UP, 0, "up");
 		InputManager.registerKey(GLFW.GLFW_KEY_DOWN, 0, "down");
 		InputManager.registerKey(GLFW.GLFW_KEY_LEFT, 0, "left");
 		InputManager.registerKey(GLFW.GLFW_KEY_RIGHT, 0, "right");
 		
-		//Player Movement
+		//Player movement
 		InputManager.registerKey(GLFW.GLFW_KEY_A, 0, "p_left");
 		InputManager.registerKey(GLFW.GLFW_KEY_D, 0, "p_right");
 		InputManager.registerKey(GLFW.GLFW_KEY_SPACE, 0, "p_jump");
+		
+		//Switch element
+		InputManager.registerKey(GLFW.GLFW_KEY_1, 0, "e_fire");
+		InputManager.registerKey(GLFW.GLFW_KEY_2, 0, "e_wind");
+		InputManager.registerKey(GLFW.GLFW_KEY_3, 0, "e_earth");
+		InputManager.registerKey(GLFW.GLFW_KEY_4, 0, "e_water");
 		
 		initialized = true;
 	}

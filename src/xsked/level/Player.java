@@ -13,8 +13,14 @@ import time.api.math.Vector2f;
 import time.api.math.VectorXf;
 import time.api.physics.Body;
 import xsked.Main;
+import xsked.level.Spell.SpellType;
 
 public class Player extends Entity{
+	
+	public static final int MODE_APPRENTICE = 0;
+	public static final int MODE_WIZARD = 1;
+	
+	public static final float SPELL_SPEED = 200f;
 	
 	public static final float MAX_SPEED = 300f;
 	
@@ -25,8 +31,9 @@ public class Player extends Entity{
 	private static final float WIDTH = Tile.SIZE * 1.0f;
 	private static final float HEIGHT = Tile.SIZE * 2.0f;
 	
+	public final int MODE;
 	
-	private static Tag element;
+	private SpellType element = SpellType.FIRE;
 	
 	private boolean grounded;
 	
@@ -39,19 +46,30 @@ public class Player extends Entity{
 	
 	private float speed;
 	
-	public Player(float x, float y) {
+	private boolean canMove = true;
+	
+	private QuadRenderer icon;
+	
+	public Player(float x, float y, int mode) {
 		setRenderer(new QuadRenderer(x, y, WIDTH, HEIGHT, Texture.getDT("player", true)));
 		setBody(new Body(this.transform, WIDTH, HEIGHT).setEpsilon(0).setFriction(0f));
 		
-		initAnimations();
+		this.MODE = mode;
 		
-		element = Tag.FIRE;
+		icon = new QuadRenderer(0, 0, WIDTH / 3, WIDTH / 3, Texture.get("element_" + element.name().toLowerCase()));
+		
+		initAnimations();
 		
 		body.addTag(Tag.PLAYER.name());
 		grounded = false;
 	}
 	
-	public Tag getElement() {
+	public void switchElement(SpellType element) {
+		this.element = element;
+		icon.setTexture(Texture.get("element_" + element.name().toLowerCase()));
+	}
+	
+	public SpellType getElement() {
 		return element;
 	}
 	
@@ -87,20 +105,22 @@ public class Player extends Entity{
 		}
 		
 		//Do all movement
-		if (InputManager.wasPressed("p_jump") && grounded) {
-			body.addVel(new VectorXf(0, JUMP_SPEED));
-		}
-		
-		if (InputManager.wasPressed("p_left")) {
-			setSpeed(-MAX_SPEED);
-		} else if(InputManager.wasReleased("p_left") && direction == -1) {
-			setSpeed(0);
-		}
-		
-		if (InputManager.wasPressed("p_right")) {
-			setSpeed(MAX_SPEED);
-		} else if(InputManager.wasReleased("p_right") && direction == 1) {
-			setSpeed(0);
+		if(canMove) {
+			if (InputManager.wasPressed("p_jump") && grounded) {
+				body.addVel(new VectorXf(0, JUMP_SPEED));
+			}
+			
+			if (InputManager.wasPressed("p_left")) {
+				setSpeed(-MAX_SPEED);
+			} else if(InputManager.wasReleased("p_left") && direction == -1) {
+				setSpeed(0);
+			}
+			
+			if (InputManager.wasPressed("p_right")) {
+				setSpeed(MAX_SPEED);
+			} else if(InputManager.wasReleased("p_right") && direction == 1) {
+				setSpeed(0);
+			}
 		}
 		
 		body.setVel(new Vector2f(speed, body.getVel().getY()));
@@ -129,6 +149,16 @@ public class Player extends Entity{
 		}
 		
 		currentAnimation.update(delta);
+	}
+	
+	public void draw() {
+		super.draw();
+		icon.setPosition(getX(), getY() + WIDTH);
+		icon.draw();
+	}
+	
+	public void setCanMove(boolean canMove) {
+		this.canMove = canMove;
 	}
 	
 	public int getDirection() {
