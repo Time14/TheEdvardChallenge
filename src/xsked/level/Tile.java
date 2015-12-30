@@ -33,7 +33,7 @@ public class Tile extends Entity {
 		this.y = y;
 		
 		transform = new Transform(0, 0);
-		level.getPhysicsEngien().addBody(body);
+		level.getPhysicsEngine().addBody(body);
 		
 		updateCollider();
 	}
