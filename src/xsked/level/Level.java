@@ -60,7 +60,7 @@ public class Level {
 //	}
 	
 	public Level(int mode) {
-		player = new Player(0, 200, mode);
+		player = new Player(this, 0, 200, mode);
 		
 		spells = new ArrayList<>();
 		spellTrash = new ArrayList<>();
@@ -89,7 +89,11 @@ public class Level {
 		generateLevel();
 	}
 	
-	public PhysicsEngine getPhysicsEngien() {
+	public void deletePhysicsEngine() {
+		pe = null;
+	}
+	
+	public PhysicsEngine getPhysicsEngine() {
 		return pe;
 	}
 	
@@ -199,53 +203,57 @@ public class Level {
 	}
 	
 	public void update(float delta) {		
+		
 		//Summon ghosts
-				ghostSpawnTimer += delta;
-				if(ghostSpawnTimer > 5f){
-					ghostSpawnTimer = 0;
-					
-					SpellType type = SpellType.FIRE;
-					
-					switch(rand.nextInt(4)) {
-					case 0:
-						type = SpellType.EARTH;
-						break;
-					case 1:
-						type = SpellType.FIRE;
-						break;
-					case 2:
-						type = SpellType.WIND;
-						break;
-					case 3:
-						type = SpellType.WATER;
-						break;
-					}
-					
-					float dx = Math.round(rand.nextFloat()) * 2 - 1;
-					float dy = Math.round(rand.nextFloat()) * 2 - 1;
-					float x = player.getX() + dx * Main.WIDTH;
-					float y = player.getY() + dy * Main.HEIGHT;
-					summonGhost(x, y, type);
-					LevelSender.sendPacket(new PacketSummonGhost(x, y, type));
+		if(!player.isDead()) {
+			ghostSpawnTimer += delta;
+			if(ghostSpawnTimer > 5f){
+				ghostSpawnTimer = 0;
+				
+				SpellType type = SpellType.FIRE;
+				
+				switch(rand.nextInt(4)) {
+				case 0:
+					type = SpellType.EARTH;
+					break;
+				case 1:
+					type = SpellType.FIRE;
+					break;
+				case 2:
+					type = SpellType.WIND;
+					break;
+				case 3:
+					type = SpellType.WATER;
+					break;
 				}
-		
-		//Updating and trashing entities
-		for(Ghost ghost : ghostTrash)
-			ghosts.remove(ghosts.indexOf(ghost));
-		ghostTrash.clear();
-		
-		for(Ghost ghost : ghosts)
-			ghost.update(delta);
-		
-		for(Spell spell : spellTrash)
-			spells.remove(spells.indexOf(spell));
-		spellTrash.clear();
-		
-		for(Spell spell : spells)
-			spell.update(delta);
+				
+				float dx = Math.round(rand.nextFloat()) * 2 - 1;
+				float dy = Math.round(rand.nextFloat()) * 2 - 1;
+				float x = player.getX() + dx * Main.WIDTH;
+				float y = player.getY() + dy * Main.HEIGHT;
+				summonGhost(x, y, type);
+				LevelSender.sendPacket(new PacketSummonGhost(x, y, type));
+			}
+			
+			//Updating and trashing entities
+			for(Ghost ghost : ghostTrash)
+				ghosts.remove(ghosts.indexOf(ghost));
+			ghostTrash.clear();
+			
+			for(Ghost ghost : ghosts)
+				ghost.update(delta);
+			
+			for(Spell spell : spellTrash)
+				spells.remove(spells.indexOf(spell));
+			spellTrash.clear();
+			
+			for(Spell spell : spells)
+				spell.update(delta);
+		}
 		
 		//Physics
-		pe.update(delta);
+		if(pe != null)
+			pe.update(delta);
 		player.p_update(delta);
 	}
 	
@@ -299,12 +307,20 @@ public class Level {
 		spellTrash.add(spell);
 	}
 	
+	public void clearSpells() {
+		spells.clear();
+	}
+	
 	public void summonGhost(float x, float y, SpellType element) {
 		ghosts.add(new Ghost(this, x, y, element, player.MODE == Player.MODE_WIZARD));
 	}
 	
 	public void removeGhost(Ghost ghost) {
 		ghostTrash.add(ghost);
+	}
+	
+	public void clearGhosts() {
+		ghosts.clear();
 	}
 	
 	public Chunk getChunkByTile(int x, int y) {

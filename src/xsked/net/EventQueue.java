@@ -28,6 +28,8 @@ public class EventQueue {
 			} else if(packet instanceof PacketSummonGhost) {
 				PacketSummonGhost p = (PacketSummonGhost) packet;
 				level.summonGhost(p.X, p.Y, p.TYPE);
+			} else if(packet instanceof PacketPlayerDeath) {
+				level.getPlayer().kill();
 			}
 		}
 	}

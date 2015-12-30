@@ -113,6 +113,8 @@ public class StateMenuMain extends GameState {
 		
 		SpriteSheet.register("player", new SpriteSheet(16, 8, 16, 32).loadTexture("res/texture/apprentice/apprenticeSheet.png"));
 		
+		SpriteSheet.register("spells", new SpriteSheet(16, 16, 16, 16).loadTexture("res/texture/apprentice/spells.png"));
+		
 		SpriteSheet.register("elements", new SpriteSheet(2, 2, 16, 16).loadTexture("res/texture/apprentice/elements.png"));
 		
 		//Textures
@@ -123,10 +125,7 @@ public class StateMenuMain extends GameState {
 		
 		Texture.register("player", new DynamicTexture(SpriteSheet.get("player")));
 		
-		Texture.register("spell_wind", new Texture("res/texture/apprentice/spell_wind.png"));
-		Texture.register("spell_earth", new Texture("res/texture/apprentice/spell_earth.png"));
-		Texture.register("spell_water", new Texture("res/texture/apprentice/spell_water.png"));
-		Texture.register("spell_fire", new Texture("res/texture/apprentice/spell_fire.png"));
+		Texture.register("spells", new DynamicTexture(SpriteSheet.get("spells")));
 		
 		Texture.register("element_wind", SpriteSheet.get("elements").getTexture(0, 0));
 		Texture.register("element_water", SpriteSheet.get("elements").getTexture(1, 0));
