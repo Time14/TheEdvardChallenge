@@ -33,7 +33,6 @@ public class Tile extends Entity {
 		this.y = y;
 		
 		transform = new Transform(0, 0);
-		body = new Body(transform, SIZE, SIZE).setTrigger(!solid).setAbsolute(absolute).setEpsilon(0).setFriction(10);
 		level.getPhysicsEngien().addBody(body);
 		
 		updateCollider();
