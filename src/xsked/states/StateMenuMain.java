@@ -41,11 +41,8 @@ public class StateMenuMain extends GameState {
 	public void init() {
 		if(!initialized)
 			setup();
-<<<<<<< HEAD
+
 		
-=======
-//		
->>>>>>> origin/master
 //		AudioManager.start();
 //		
 //		AudioLibrary.registerAudio("song", new Audio("res/sounds/EdvardsSong.wav"));
@@ -53,11 +50,7 @@ public class StateMenuMain extends GameState {
 //		AudioLibrary.registerAudio("landing", new Audio("res/sounds/landing.wav"));
 //		AudioLibrary.registerAudio("step", new Audio("res/sounds/step.wav"));
 //		
-<<<<<<< HEAD
 //		AudioManager.playLoop(0, 0.5f, 1.0f, "song");
-=======
-		
->>>>>>> origin/master
 		
 		gui = new GUI();
 		
