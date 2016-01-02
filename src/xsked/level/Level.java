@@ -286,6 +286,7 @@ public class Level {
 				}
 			}
 		}
+		
 		player.draw();
 		
 		for(Ghost ghost : ghosts)
