@@ -23,9 +23,13 @@ public class EventQueue {
 			}
 			
 			if(packet instanceof PacketSummonSpell) {
+				if(level.getPlayer().isDead())
+					return;
 				PacketSummonSpell p = (PacketSummonSpell) packet;
 				level.summonSpell(p.X, p.Y, p.TYPE, new Vector2f(p.DX, p.DY));
 			} else if(packet instanceof PacketSummonGhost) {
+				if(level.getPlayer().isDead())
+					return;
 				PacketSummonGhost p = (PacketSummonGhost) packet;
 				level.summonGhost(p.X, p.Y, p.TYPE);
 			} else if(packet instanceof PacketPlayerDeath) {

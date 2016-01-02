@@ -59,7 +59,7 @@ public class NetworkManager {
 		
 		try {
 			server.start();
-			server.bind("localhost", PORT);
+			server.bind("192.168.1.8", PORT);
 		} catch (UnknownHostException e) {
 			return ERR_UNKNOWN_HOST;
 		} catch (IOException e) {
