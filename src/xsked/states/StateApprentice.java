@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL11;
 
 import time.api.debug.Debug;
 import time.api.gamestate.GameState;
+import time.api.gamestate.GameStateManager;
 import time.api.input.InputManager;
 import time.api.math.Vector2f;
 import time.api.util.Time;
@@ -16,6 +17,7 @@ import xsked.level.Spell.SpellType;
 import xsked.level.Tile;
 import xsked.net.EventQueue;
 import xsked.net.LevelSender;
+import xsked.net.NetworkManager;
 import xsked.net.PacketSummonGhost;
 import xsked.net.PacketSwitchElement;
 
@@ -30,7 +32,7 @@ public class StateApprentice extends GameState {
 	@Override
 	public void init() {
 		
-		level = new Level(2, 2, Player.MODE_APPRENTICE);
+		level = new Level(Player.MODE_APPRENTICE);
 		
 		LevelSender.setLevel(level);
 		EventQueue.setLevel(level);
@@ -53,6 +55,9 @@ public class StateApprentice extends GameState {
 	
 	@Override
 	public void update(float dt) {
+		if(!NetworkManager.isConnected())
+			GameStateManager.enterState("Main");
+		
 		if(dt > .3f)
 			return;
 		

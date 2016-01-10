@@ -50,7 +50,7 @@ public class Spell extends Entity {
 		body.getPos().add(dir.clone().scale(speed * delta));
 		health -= delta;
 		
-		if(body.isCollidingWith(Tag.LEATHAL.name()))
+		if(body.isCollidingWith(Tag.LETHAL.name()))
 			health = 0;
 		
 		currentAnimation.update(delta);

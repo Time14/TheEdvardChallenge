@@ -4,12 +4,15 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
 import time.api.gamestate.GameState;
+import time.api.gamestate.GameStateManager;
+import time.api.gfx.shader.ShaderProgram;
 import time.api.math.Vector2f;
 import xsked.level.Camera;
 import xsked.level.Level;
 import xsked.level.Player;
 import xsked.net.EventQueue;
 import xsked.net.LevelSender;
+import xsked.net.NetworkManager;
 import xsked.net.PacketSummonSpell;
 
 public class StateWizard extends GameState {
@@ -22,7 +25,7 @@ public class StateWizard extends GameState {
 	
 	@Override
 	public void init() {
-		level = new Level(2, 2, Player.MODE_WIZARD);
+		level = new Level(Player.MODE_WIZARD);
 		
 		level.getPlayer().setCanMove(false);
 		
@@ -59,6 +62,9 @@ public class StateWizard extends GameState {
 	
 	@Override
 	public void update(float dt) {
+		if(!NetworkManager.isConnected())
+			GameStateManager.enterState("Main");
+		
 		if(dt > .3f)
 			return;
 		level.update(dt);

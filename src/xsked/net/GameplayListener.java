@@ -1,5 +1,7 @@
 package xsked.net;
 
+import java.net.SocketException;
+
 import sk.net.SKConnection;
 import sk.net.SKPacket;
 import sk.net.SKPacketListener;
@@ -20,7 +22,9 @@ public class GameplayListener implements SKPacketListener {
 	
 	@Override
 	public void disconnected(SKConnection connection, boolean local, String msg) {
-		
+		NetworkManager.setConnected(false);
+		if(NetworkManager.isServer() && !local)
+			NetworkManager.stop();
 	}
 	
 	@Override
@@ -40,7 +44,8 @@ public class GameplayListener implements SKPacketListener {
 		} else if(packet instanceof PacketSwitchElement) {
 			PacketSwitchElement p = (PacketSwitchElement) packet;
 			EventQueue.getLevel().getPlayer().switchElement(p.ELEMENT);
-		}else if(packet instanceof PacketSummonSpell || packet instanceof PacketSummonGhost || packet instanceof PacketPlayerDeath) {
+		}else if(packet instanceof PacketSummonSpell || packet instanceof PacketSummonGhost
+				|| packet instanceof PacketPlayerDeath || packet instanceof PacketInitLevel) {
 			EventQueue.queue(packet);
 		}
 	}

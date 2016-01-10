@@ -78,6 +78,7 @@ public class StateMenuMain extends GameState {
 	
 	@Override
 	public void draw() {
+		Camera.pop();
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 		gui.draw();
 	}
@@ -136,6 +137,8 @@ public class StateMenuMain extends GameState {
 		
 		Texture.register("tilesheet", new Texture("res/texture/tiles/fullSheet.png"));
 		
+		Texture.register("door", new Texture("res/texture/tiles/door.png"));
+		
 		Texture.register("player", new DynamicTexture(SpriteSheet.get("player")));
 		
 		Texture.register("spells", new DynamicTexture(SpriteSheet.get("spells")));
@@ -152,6 +155,10 @@ public class StateMenuMain extends GameState {
 		InputManager.registerKey(GLFW.GLFW_KEY_DOWN, 0, "down");
 		InputManager.registerKey(GLFW.GLFW_KEY_LEFT, 0, "left");
 		InputManager.registerKey(GLFW.GLFW_KEY_RIGHT, 0, "right");
+		
+		//General
+		InputManager.registerKey(GLFW.GLFW_KEY_R, 0, "restart");
+		InputManager.registerKey(GLFW.GLFW_KEY_E, 0, "exit");
 		
 		//Player movement
 		InputManager.registerKey(GLFW.GLFW_KEY_A, 0, "p_left");
