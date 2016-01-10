@@ -12,14 +12,14 @@ public class NetworkManager {
 	
 	public static final int PORT = 6969;
 	
-	public static final int TYPE_CLIENT = 0;
-	public static final int TYPE_SERVER = 1;
+	public static final int TYPE_CLIENT = 1;
+	public static final int TYPE_SERVER = 2;
 	
-	public static final int ERR_NONE = 0;
-	public static final int ERR_CLIENT = 1;
-	public static final int ERR_SERVER = 2;
-	public static final int ERR_IO = 3;
-	public static final int ERR_UNKNOWN_HOST = 4;
+	public static final int ERR_NONE = 3;
+	public static final int ERR_CLIENT = 4;
+	public static final int ERR_SERVER = 5;
+	public static final int ERR_IO = 6;
+	public static final int ERR_UNKNOWN_HOST = 7;
 	
 	private static GameplayListener listener;
 	private static SKServer server = new SKServer();

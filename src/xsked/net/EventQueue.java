@@ -7,6 +7,7 @@ import time.api.debug.Debug;
 import time.api.gamestate.GameStateManager;
 import time.api.math.Vector2f;
 import xsked.level.Level;
+import xsked.level.Player;
 
 public class EventQueue {
 	
@@ -33,7 +34,8 @@ public class EventQueue {
 				PacketSummonGhost p = (PacketSummonGhost) packet;
 				level.summonGhost(p.X, p.Y, p.TYPE);
 			} else if(packet instanceof PacketPlayerDeath) {
-				level.getPlayer().kill();
+				if(level.getPlayer().MODE == Player.MODE_WIZARD)
+					level.getPlayer().kill();
 			} else if(packet instanceof PacketInitLevel) {
 				PacketInitLevel p = (PacketInitLevel) packet;
 				level.nextFloor(p.PLAYER_MODE, p.FLOOR, p.SEED);

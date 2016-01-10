@@ -31,6 +31,8 @@ public class StateMenuMain extends GameState {
 	
 	private boolean initialized = false;
 	
+	private boolean fullscreen = true;
+	
 	public StateMenuMain(Game game) {
 		super("Main");
 		
@@ -105,6 +107,8 @@ public class StateMenuMain extends GameState {
 	}
 	
 	private void setup() {
+		
+		//Fullscreen
 		
 		//Font
 		font = FontType.FNT_ARIAL;

@@ -271,34 +271,34 @@ public class Level {
 		if(!player.isDead()) {
 			floorPrompt.update(delta);
 			//Summon ghosts
-//			ghostSpawnTimer += delta;
-//			if(ghostSpawnTimer > 5f){
-//				ghostSpawnTimer = 0;
-//				
-//				SpellType type = SpellType.FIRE;
-//				
-//				switch(rand.nextInt(4)) {
-//				case 0:
-//					type = SpellType.EARTH;
-//					break;
-//				case 1:
-//					type = SpellType.FIRE;
-//					break;
-//				case 2:
-//					type = SpellType.WIND;
-//					break;
-//				case 3:
-//					type = SpellType.WATER;
-//					break;
-//				}
-//				
-//				float dx = Math.round(rand.nextFloat()) * 2 - 1;
-//				float dy = Math.round(rand.nextFloat()) * 2 - 1;
-//				float x = player.getX() + dx * Main.WIDTH;
-//				float y = player.getY() + dy * Main.HEIGHT;
-//				summonGhost(x, y, type);
-//				LevelSender.sendPacket(new PacketSummonGhost(x, y, type));
-//			}
+			ghostSpawnTimer += delta;
+			if(ghostSpawnTimer > 5f){
+				ghostSpawnTimer = 0;
+				
+				SpellType type = SpellType.FIRE;
+				
+				switch(rand.nextInt(4)) {
+				case 0:
+					type = SpellType.EARTH;
+					break;
+				case 1:
+					type = SpellType.FIRE;
+					break;
+				case 2:
+					type = SpellType.WIND;
+					break;
+				case 3:
+					type = SpellType.WATER;
+					break;
+				}
+				
+				float dx = Math.round(rand.nextFloat()) * 2 - 1;
+				float dy = Math.round(rand.nextFloat()) * 2 - 1;
+				float x = player.getX() + dx * Main.WIDTH;
+				float y = player.getY() + dy * Main.HEIGHT;
+				summonGhost(x, y, type);
+				LevelSender.sendPacket(new PacketSummonGhost(x, y, type));
+			}
 			
 			//Updating and trashing entities
 			for(Ghost ghost : ghostTrash)

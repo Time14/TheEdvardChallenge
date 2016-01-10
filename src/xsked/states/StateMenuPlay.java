@@ -53,9 +53,7 @@ public class StateMenuPlay extends GameState {
 		gui.addElements(
 			host,
 			connect,
-			back,
-			//DEBUG------------------------------------------------------------------------------------
-			new Button(100, 100, 50, 50, Texture.DEFAULT_TEXTURE).setClickEvent(() -> GameStateManager.enterState("Apprentice"))
+			back
 		);
 		
 	}

@@ -1,0 +1,7 @@
+#Test level
+
+define> name TestLevel
+define> gravity 0|-100
+
+make> res/level/asset/box.asset box1 640 360 false|10|10
+make> res/level/asset/box.asset box2 360 640 true|200|25

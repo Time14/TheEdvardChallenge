@@ -188,8 +188,12 @@ public class Player extends Entity{
 		}
 		
 		if(!dead && body.isCollidingWith(Tag.LETHAL.name())) {
-			LevelSender.sendPacket(new PacketPlayerDeath());
-			kill();
+			if(MODE == MODE_APPRENTICE) {
+				LevelSender.sendPacket(new PacketPlayerDeath());
+				kill();
+			} else {
+				
+			}
 		}
 		
 		if (MAX_SPEED < Math.abs(body.getVel().dot(flatVector))) {
