@@ -28,6 +28,10 @@ public class GroundTile extends Tile{
 		updateCollider();
 	}
 	
+	public void addTag(Tag tag) {
+		groundTrigger.addTag(tag.name());
+	}
+	
 	public void updateCollider() {
 		super.updateCollider();
 		

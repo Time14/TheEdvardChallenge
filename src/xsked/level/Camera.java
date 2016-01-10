@@ -10,6 +10,8 @@ public class Camera {
 	
 	private static float x, y;
 	
+	private static float radius = 500f;
+	
 	public static final float getX() {
 		return x;
 	}
@@ -25,7 +27,17 @@ public class Camera {
 	}
 	
 	public static final void setPosition(float x, float y) {
+		setX(x);
+		setY(y);
+		push();
+	}
+	
+	public static final void setX(float x) {
 		Camera.x = x;
+		push();
+	}
+	
+	public static final void setY(float y) {
 		Camera.y = y;
 		push();
 	}

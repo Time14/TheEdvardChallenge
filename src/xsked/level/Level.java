@@ -5,21 +5,35 @@ import java.util.Random;
 
 import time.api.debug.Debug;
 import time.api.entity.EntityManager;
+import time.api.gamestate.GameStateManager;
+import time.api.gfx.QuadRenderer;
+import time.api.gfx.font.FontRenderer;
+import time.api.gfx.font.FontType;
+import time.api.gfx.texture.SpriteSheet;
 import time.api.gfx.texture.Texture;
 import time.api.input.InputManager;
 import time.api.math.Vector2f;
 import time.api.math.Vector3f;
+import time.api.math.Vector4f;
+import time.api.physics.Body;
 import time.api.physics.Collision;
 import time.api.physics.PhysicsEngine;
 import time.api.util.Time;
 import xsked.Main;
 import xsked.level.Spell.SpellType;
 import xsked.net.LevelSender;
+import xsked.net.NetworkManager;
+import xsked.net.PacketInitLevel;
 import xsked.net.PacketSummonGhost;
 
 public class Level {
 	
 	public static final int DRAW_DISTANCE = 2;
+	
+	public static final int BORDER_WIDTH = Tile.SIZE * 10;
+	
+	private static int currentFloor = 0;
+	private static int currentSeed = 0;
 	
 	private Chunk[][] chunks;
 	
@@ -36,9 +50,25 @@ public class Level {
 	
 	private ArrayList<Ghost> ghosts;
 	private ArrayList<Ghost> ghostTrash;
+	
+	private Door door;
+	
+	private QuadRenderer background;
+	
+	//HUD - START
+	
+	private FontRenderer floorDisplay;
+	
+	private TextFader floorPrompt;
+	private TextFader gameOverPrompt;
+	private TextFader pressPrompt;
+	
+	//HUD - END
 	private float ghostSpawnTimer;
 	
 	private Random rand;
+	
+	private boolean completed;
 	
 //	public Level(int tilesX, int tilesY, int floor) {
 //		this.tilesX = tilesX;
@@ -60,6 +90,9 @@ public class Level {
 //	}
 	
 	public Level(int mode) {
+		this.seed = currentSeed;
+		this.floor = currentFloor;
+		
 		player = new Player(this, 0, 200, mode);
 		
 		spells = new ArrayList<>();
@@ -68,23 +101,33 @@ public class Level {
 		ghosts = new ArrayList<>();
 		ghostTrash = new ArrayList<>();
 		
+		floorDisplay = new FontRenderer(0, 0, "Floor: " + floor, FontType.FNT_ARIAL, .3f);
+		floorDisplay.setPosition(Main.WIDTH - floorDisplay.getWidth(), Main.HEIGHT - floorDisplay.getAverageHeight());
+		
+		floorPrompt = new TextFader(Main.WIDTH / 2, Main.HEIGHT / 2,
+				1, 1, 1, "Floor: " + floor, 2f);
+		
+		gameOverPrompt = new TextFader(Main.WIDTH / 2, Main.HEIGHT / 2,
+				1, -1, 0, "Game Over", 2f);
+		
+		pressPrompt = new TextFader(Main.WIDTH / 2, Main.HEIGHT / 2 - 100,
+				1, -1, 0, (NetworkManager.isServer() ? "Press 'R' to restart or" : "Press") + " 'E' to exit", .3f);
+		
+		background = new QuadRenderer(Main.WIDTH / 2, Main.HEIGHT / 2,
+				Main.WIDTH, Main.HEIGHT,
+				0, 0, .0625f, .0625f, Texture.get("tilesheet")
+		);
+		
 		rand = new Random();
 		
 		pe = new PhysicsEngine();
 		
 		pe.useStep(false);
-		Collision.setMoveConstant(0.3f);
 		
 		pe.setGravity(0, -800);
-		Collision.setMoveConstant(0.3f);
+		Collision.setMoveConstant(.1f);
 		
 		pe.addBody(player.getBody());
-	}
-	
-	public Level(int floor, int seed, int mode) {
-		this(mode);
-		this.floor = floor;
-		this.seed = seed;
 		
 		generateLevel();
 	}
@@ -145,7 +188,7 @@ public class Level {
 			moves[i] = new Vector3f(dx, dy, l);
 		}
 		
-		//INITALIZING AWESOME LEVEL CRAETION ALGORYTHM
+		//INITALIZING AWESOME LEVEL CRAETION ALGORITHM
 		//BOTTING INTO THE MATRIX
 		
 		
@@ -191,49 +234,71 @@ public class Level {
 		player.setPosition(((currentX - dir * startWidth * 0.5f + 0.5f) * Tile.SIZE), (currentY + 2) * Tile.SIZE);
 		Camera.setPosition(player.getX(), player.getY());
 		
-		for(Vector3f move : moves) {
+		for(int i = 0; i < moves.length; i++) {
 			
 			Debug.log(currentX, currentY, "Stuff");
 
-			currentX += dir * move.getX();
-			currentY += move.getY();
-			makePlatform(currentX, currentY, (int) move.getZ(), dir);
-			currentX += dir * move.getZ();
+			currentX += dir * moves[i].getX();
+			currentY += moves[i].getY();
+			makePlatform(currentX, currentY, (int) moves[i].getZ(), dir);
+			currentX += dir * moves[i].getZ();
+			
+			if(i == moves.length - 1)
+				door = new Door(this, (currentX + 2) * Tile.SIZE, (currentY + 1.5f) * Tile.SIZE);
+		}
+		
+		generateBorders();
+	}
+	
+	private void generateBorders() {
+		
+		//Horizontal
+		for(int i = 0; i < chunks.length * Chunk.TILES; i++) {
+			setTile(i, 0, 12, true, true);
+			((GroundTile) getTile(i, 0)).addTag(Tag.LETHAL);
+			setTile(i, chunks[0].length * Chunk.TILES - 1, 12, false, true);
+		}
+		
+		//Vertical
+		for(int i = 0; i < chunks[0].length * Chunk.TILES; i++) {
+			setTile(0, i, 12, false, true);
+			setTile(chunks.length * Chunk.TILES - 1, i, 12, false, true);
 		}
 	}
 	
-	public void update(float delta) {		
+	public void update(float delta) {
 		
-		//Summon ghosts
 		if(!player.isDead()) {
-			ghostSpawnTimer += delta;
-			if(ghostSpawnTimer > 5f){
-				ghostSpawnTimer = 0;
-				
-				SpellType type = SpellType.FIRE;
-				
-				switch(rand.nextInt(4)) {
-				case 0:
-					type = SpellType.EARTH;
-					break;
-				case 1:
-					type = SpellType.FIRE;
-					break;
-				case 2:
-					type = SpellType.WIND;
-					break;
-				case 3:
-					type = SpellType.WATER;
-					break;
-				}
-				
-				float dx = Math.round(rand.nextFloat()) * 2 - 1;
-				float dy = Math.round(rand.nextFloat()) * 2 - 1;
-				float x = player.getX() + dx * Main.WIDTH;
-				float y = player.getY() + dy * Main.HEIGHT;
-				summonGhost(x, y, type);
-				LevelSender.sendPacket(new PacketSummonGhost(x, y, type));
-			}
+			floorPrompt.update(delta);
+			//Summon ghosts
+//			ghostSpawnTimer += delta;
+//			if(ghostSpawnTimer > 5f){
+//				ghostSpawnTimer = 0;
+//				
+//				SpellType type = SpellType.FIRE;
+//				
+//				switch(rand.nextInt(4)) {
+//				case 0:
+//					type = SpellType.EARTH;
+//					break;
+//				case 1:
+//					type = SpellType.FIRE;
+//					break;
+//				case 2:
+//					type = SpellType.WIND;
+//					break;
+//				case 3:
+//					type = SpellType.WATER;
+//					break;
+//				}
+//				
+//				float dx = Math.round(rand.nextFloat()) * 2 - 1;
+//				float dy = Math.round(rand.nextFloat()) * 2 - 1;
+//				float x = player.getX() + dx * Main.WIDTH;
+//				float y = player.getY() + dy * Main.HEIGHT;
+//				summonGhost(x, y, type);
+//				LevelSender.sendPacket(new PacketSummonGhost(x, y, type));
+//			}
 			
 			//Updating and trashing entities
 			for(Ghost ghost : ghostTrash)
@@ -249,6 +314,19 @@ public class Level {
 			
 			for(Spell spell : spells)
 				spell.update(delta);
+			
+			door.update(delta);
+		} else {
+			gameOverPrompt.update(delta);
+			pressPrompt.update(delta);
+			
+			if(InputManager.wasPressed("restart") && NetworkManager.isServer()) {
+				nextFloor(Player.MODE_WIZARD, 0, 0);
+			}
+			
+			if(InputManager.wasPressed("exit")) {
+				NetworkManager.stop();
+			}
 		}
 		
 		//Physics
@@ -257,12 +335,20 @@ public class Level {
 		player.p_update(delta);
 	}
 	
-	public void setTile(int x, int y, int spriteOffset, boolean isGround) {
+	public void setTile(int x, int y, int spriteOffset, boolean isGround, boolean solid) {
 		Chunk c = getChunkByTile(x, y);
 		if (isGround)
 			c.setTile(x % Chunk.TILES, y % Chunk.TILES, new GroundTile(this, c, spriteOffset));
 		else
-			c.setTile(x % Chunk.TILES, y % Chunk.TILES, new Tile(this, c, spriteOffset, false));
+			c.setTile(x % Chunk.TILES, y % Chunk.TILES, new Tile(this, c, spriteOffset, solid));
+	}
+	
+	public void setTile(int x, int y, int spriteOffset, boolean isGround) {
+		setTile(x, y, spriteOffset, isGround, false);
+	}
+	
+	public Tile getTile(int x, int y) {
+		return getChunkByTile(x, y).getTile(x % Chunk.TILES, y % Chunk.TILES);
 	}
 	
 	public void makePlatform(int x, int y, int l, int dir) {
@@ -273,6 +359,10 @@ public class Level {
 	}
 	
 	public void draw() {
+		
+		background.draw();
+		Camera.push();
+		
 		int x = (int)Math.floor(player.getX() / (Chunk.TILES * Tile.SIZE));
 		int y = (int)Math.floor(player.getY() / (Chunk.TILES * Tile.SIZE));
 		for (int i = -DRAW_DISTANCE; i < DRAW_DISTANCE + 1; i++) {
@@ -294,6 +384,17 @@ public class Level {
 		
 		for(Spell spell : spells)
 			spell.draw();
+		
+		door.draw();
+		
+		//HUD
+		
+		floorDisplay.draw();
+		floorPrompt.draw();
+		gameOverPrompt.draw();
+		pressPrompt.draw();
+		
+		Camera.pop();
  	}
 	
 	public Player getPlayer() {
@@ -324,11 +425,34 @@ public class Level {
 		ghosts.clear();
 	}
 	
+	public void nextFloor(int mode, int floor, int seed) {
+		if(completed)
+			return;
+		
+		completed = true;
+		
+		currentFloor = floor;
+		currentSeed = seed;
+		
+		GameStateManager.enterState(mode == Player.MODE_APPRENTICE ? "Apprentice" : "Wizard");
+		
+		if(NetworkManager.isClient())
+			return;
+		
+		LevelSender.sendPacket(new PacketInitLevel(
+				mode == Player.MODE_APPRENTICE ?
+						Player.MODE_WIZARD : Player.MODE_APPRENTICE, currentFloor, seed));
+	}
+	
 	public Chunk getChunkByTile(int x, int y) {
 		int cx = (int)Math.floorDiv(x, (Chunk.TILES));
 		int cy = (int)Math.floorDiv(y, (Chunk.TILES));
 		Debug.log("Cunk", x, y, cx, cy);
 		return chunks[cx][cy];
+	}
+	
+	public int getFloor() {
+		return floor;
 	}
 	
 	public Chunk getChunk(int x, int y) {
