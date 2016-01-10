@@ -74,7 +74,7 @@ public class StateMenuHost extends GameState {
 		
 		back.setClickEvent(() -> {
 			GameStateManager.enterState("Play Menu");
-			NetworkManager.getServer().stop("You were fired!");
+			NetworkManager.stop();
 		});
 		
 		gui.addElements(
