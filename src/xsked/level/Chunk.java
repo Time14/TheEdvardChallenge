@@ -60,4 +60,8 @@ public class Chunk extends Entity {
 		tile.updateCollider();
 		return this;
 	}
+	
+	public Tile getTile(int x, int y) {
+		return tiles[y][x];
+	}
 }

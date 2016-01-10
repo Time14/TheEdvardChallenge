@@ -34,6 +34,10 @@ public class EventQueue {
 				level.summonGhost(p.X, p.Y, p.TYPE);
 			} else if(packet instanceof PacketPlayerDeath) {
 				level.getPlayer().kill();
+			} else if(packet instanceof PacketInitLevel) {
+				PacketInitLevel p = (PacketInitLevel) packet;
+				level.nextFloor(p.PLAYER_MODE, p.FLOOR, p.SEED);
+				
 			}
 		}
 	}

@@ -2,6 +2,7 @@ package xsked.net;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import sk.net.SKClient;
@@ -24,7 +25,7 @@ public class NetworkManager {
 	private static SKServer server = new SKServer();
 	private static SKClient client = new SKClient();
 	
-	private static volatile boolean connected;
+	private static volatile boolean connected = false;
 	
 	static {
 		server.setMaxConnections(1);
@@ -59,7 +60,7 @@ public class NetworkManager {
 		
 		try {
 			server.start();
-			server.bind("192.168.1.8", PORT);
+			server.bind("localhost", PORT);
 		} catch (UnknownHostException e) {
 			return ERR_UNKNOWN_HOST;
 		} catch (IOException e) {
@@ -87,6 +88,13 @@ public class NetworkManager {
 	
 	public static final int getType() {
 		return type;
+	}
+	
+	public static final void stop() {
+		if(type == TYPE_SERVER)
+			server.stop("Disconnected by server");
+		else if(type == TYPE_CLIENT)
+			client.disconnect("Disconnected by client");
 	}
 	
 	public static final void setConnected(boolean connected) {

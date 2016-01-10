@@ -19,8 +19,8 @@ import xsked.net.PacketPlayerDeath;
 
 public class Player extends Entity{
 	
-	public static final int MODE_APPRENTICE = 0;
-	public static final int MODE_WIZARD = 1;
+	public static final int MODE_APPRENTICE = 1;
+	public static final int MODE_WIZARD = 2;
 	
 	public static final float SPELL_SPEED = 200f;
 	
@@ -29,6 +29,9 @@ public class Player extends Entity{
 	public static final float JUMP_SPEED = 500.0f;
 	
 	public static final float CAM_SPEED = 7.5f;
+	
+	public static final float CAM_PUSH_FACTOR = 100f;
+	public static final float CAM_RANGE = 500f;
 	
 	private static final float WIDTH = Tile.SIZE * 1.0f;
 	private static final float HEIGHT = Tile.SIZE * 2.0f;
@@ -86,15 +89,42 @@ public class Player extends Entity{
 		float dx = getX() - Camera.getX() - Main.WIDTH / 2;
 		float dy = getY() - Camera.getY() - Main.HEIGHT / 2;
 		
+		dx /= 2;
+		dy /= 2;
+		
 		float camMoveX = dx * delta * CAM_SPEED;
 		float camMoveY = dy * delta * CAM_SPEED;
 		
-		if(dx < camMoveX)
-			camMoveX = dx;
-		if(dy < camMoveY)
-			camMoveY = dy;
+//		if(dx < camMoveX)
+//			camMoveX = dx;
+//		if(dy < camMoveY)
+//			camMoveY = dy;
 		
-		Camera.translate(camMoveX, camMoveY);
+		boolean move = true;
+		
+		if(InputManager.isDown("up")) {
+			Camera.translate(0, CAM_SPEED * delta * CAM_PUSH_FACTOR);
+			move = false;
+		}
+		
+		if(InputManager.isDown("down")) {
+			Camera.translate(0, -CAM_SPEED * delta * CAM_PUSH_FACTOR);
+			move = false;
+		}
+		
+		if(InputManager.isDown("left")) {
+			Camera.translate(-CAM_SPEED * delta * CAM_PUSH_FACTOR, 0);
+			move = false;
+		}
+		
+		if(InputManager.isDown("right")) {
+			Camera.translate(CAM_SPEED * delta * CAM_PUSH_FACTOR, 0);
+			move = false;
+		}
+		
+		if(move)
+			Camera.translate(camMoveX, camMoveY);
+		
 	}
 	
 	public void p_update(float delta) {
@@ -157,7 +187,7 @@ public class Player extends Entity{
 			}
 		}
 		
-		if(!dead && body.isCollidingWith(Tag.LEATHAL.name())) {
+		if(!dead && body.isCollidingWith(Tag.LETHAL.name())) {
 			LevelSender.sendPacket(new PacketPlayerDeath());
 			kill();
 		}

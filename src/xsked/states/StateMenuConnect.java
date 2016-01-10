@@ -79,7 +79,6 @@ public class StateMenuConnect extends GameState {
 			connect,
 			back
 		);
-		
 	}
 	
 	@Override

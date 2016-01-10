@@ -6,9 +6,7 @@ import xsked.states.*;
 
 public class Main {
 	
-	public static boolean host = false;
-	
-	public static final String NAME = "Help I'm Stuck In a Wizzard-Tower";
+	public static final String NAME = "Help I'm Stuck In a Wizard-Tower";
 	public static final String NAME_ABBREVIATION = "HIZIW";
 	public static final int WIDTH = 1280;
 	public static final int HEIGHT = 720;
